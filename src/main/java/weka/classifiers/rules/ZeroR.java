@@ -141,12 +141,12 @@ public class ZeroR
     while (enu.hasMoreElements()) {
       Instance instance = (Instance) enu.nextElement();
       if (!instance.classIsMissing()) {
-	if (instances.classAttribute().isNominal()) {
-	  m_Counts[(int)instance.classValue()] += instance.weight();
-	} else {
-	  m_ClassValue += instance.weight() * instance.classValue();
-	}
-	sumOfWeights += instance.weight();
+        if (instances.classAttribute().isNominal()) {
+          m_Counts[(int)instance.classValue()] += instance.weight();
+        } else {
+          m_ClassValue += instance.weight() * instance.classValue();
+        }
+        sumOfWeights += instance.weight();
       }
     }
     if (instances.classAttribute().isNumeric()) {

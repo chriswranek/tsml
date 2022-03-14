@@ -549,6 +549,7 @@ public class AdaBoostM1
                 if (m_NumIterationsPerformed == 0) {
                     m_NumIterationsPerformed = 1; // If we're the first we have to to use it
                 }
+                System.out.println("Tree discarded");
                 break;
             }
 

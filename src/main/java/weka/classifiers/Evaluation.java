@@ -25,7 +25,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
 
+import fileIO.OutFile;
+import utilities.ClassifierTools;
 import weka.classifiers.evaluation.AbstractEvaluationMetric;
+import weka.classifiers.evaluation.output.prediction.AbstractOutput;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -266,8 +269,7 @@ public class Evaluation implements Serializable, Summarizable, RevisionHandler {
    * Get a list of the names of metrics to have appear in the output The default
    * is to display all built in metrics and plugin metrics that haven't been
    * globally disabled.
-   * 
-   * @param display a list of metric names to have appear in the output
+   *
    */
   public List<String> getMetricsToDisplay() {
     return m_delegate.getMetricsToDisplay();
@@ -1559,4 +1561,50 @@ public class Evaluation implements Serializable, Summarizable, RevisionHandler {
     }
   }
 
+  public void crossValidateCustomModel(Classifier classifier, Instances data, int numFolds, Random random) throws Exception {
+    OutFile out = new OutFile("C:\\Users\\block\\Desktop\\Machine Learning\\ClassifierEval\\" + classifier.getClass().getSimpleName() +"Results.csv");
+    out.writeLine(classifier.getClass().getSimpleName()+","+"Red vs Black Label");
+    out.writeLine("No parameter info");
+    out.writeLine(String.valueOf(ClassifierTools.accuracy(data,classifier)));
+
+    // Make a copy of the data we can reorder
+    data = new Instances(data);
+    data.randomize(random);
+    if (data.classAttribute().isNominal()) {
+      data.stratify(numFolds);
+    }
+
+    // We assume that the first element is a
+    // weka.classifiers.evaluation.output.prediction.AbstractOutput object
+    AbstractOutput classificationOutput = null;
+
+    // Do the folds
+    for (int i = 0; i < numFolds; i++) {
+      Instances train = data.trainCV(numFolds, i, random);
+
+      Classifier copiedClassifier = AbstractClassifier.makeCopy(classifier);
+
+      copiedClassifier.buildClassifier(train);
+
+      Instances test = data.testCV(numFolds, i);
+
+      out.writeLine("Fold "+i);
+
+      for (Instance j : test){
+
+        int pred = (int)classifier.classifyInstance(j);
+        double [] probs = classifier.distributionForInstance(j);
+        out.writeString((int)j.classValue()+","+pred+",");
+        //System.out.print((int)j.classValue()+","+pred+",");
+        for(double d : probs){
+          //System.out.print(","+d);
+          out.writeString(","+d);
+        }
+        //System.out.println("\n");
+        out.writeString("\n");
+
+      }
+
+    }
+  }
 }

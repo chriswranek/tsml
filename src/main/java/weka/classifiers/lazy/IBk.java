@@ -527,7 +527,7 @@ public class IBk
    */
   public void updateClassifier(Instance instance) throws Exception {
 
-    if (m_Train.equalHeaders(instance.dataset()) == false) {
+    if (!m_Train.equalHeaders(instance.dataset())) {
       throw new Exception("Incompatible instance types\n" + m_Train.equalHeadersMsg(instance.dataset()));
     }
     if (instance.classIsMissing()) {
@@ -540,11 +540,11 @@ public class IBk
     if ((m_WindowSize > 0) && (m_Train.numInstances() > m_WindowSize)) {
       boolean deletedInstance=false;
       while (m_Train.numInstances() > m_WindowSize) {
-	m_Train.delete(0);
-        deletedInstance=true;
+	      m_Train.delete(0);
+          deletedInstance=true;
       }
       //rebuild datastructure KDTree currently can't delete
-      if(deletedInstance==true)
+      if(deletedInstance)
         m_NNSearch.setInstances(m_Train);
     }
   }
@@ -562,14 +562,15 @@ public class IBk
       //throw new Exception("No training instances!");
       return m_defaultModel.distributionForInstance(instance);
     }
+
     if ((m_WindowSize > 0) && (m_Train.numInstances() > m_WindowSize)) {
       m_kNNValid = false;
       boolean deletedInstance=false;
       while (m_Train.numInstances() > m_WindowSize) {
-	m_Train.delete(0);
+	  m_Train.delete(0);
       }
       //rebuild datastructure KDTree currently can't delete
-      if(deletedInstance==true)
+      if(deletedInstance)
         m_NNSearch.setInstances(m_Train);
     }
 
