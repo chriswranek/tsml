@@ -336,8 +336,8 @@ static String[] problems={
 
         System.out.println("Acc = "+acc+" AUROC = "+weightAuroc);
 
-        eval.crossValidateCustomModel(c, data, 10, new Random());
-        acc = 1- eval.errorRate();
+        //eval.crossValidateCustomModel(c, data, 10, new Random());
+        //acc = 1- eval.errorRate();
     }
 
     public static void naiveVsNet() throws Exception {

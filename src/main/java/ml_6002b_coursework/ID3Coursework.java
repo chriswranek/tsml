@@ -89,9 +89,26 @@ public class ID3Coursework
   /** Class distribution if node is leaf. */
   private double[] m_Distribution;
 
+
+
   /** Class attribute of dataset. */
   private Attribute m_ClassAttribute;
-  private AttributeSplitMeasure attSplit = new IGAttributeSplitMeasure();
+  private AttributeSplitMeasure attSplit  = new IGAttributeSplitMeasure();
+
+  public void setOptions(int option){
+    switch(option){
+      case 0:
+        attSplit = new IGAttributeSplitMeasure();
+        break;
+      case 1:
+        attSplit = new GiniAttributeSplitMeasure();
+        break;
+      case 2:
+        attSplit = new ChiSquaredAttributeSplitMeasure();
+        break;
+    }
+  }
+
 
 
   /**
