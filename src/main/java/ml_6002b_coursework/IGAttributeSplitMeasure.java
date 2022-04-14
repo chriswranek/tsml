@@ -24,6 +24,8 @@ public class IGAttributeSplitMeasure implements AttributeSplitMeasure{
             computeArr[i][1] = (int) data.get(i).classValue();
         }
 
+        //System.out.println(Arrays.deepToString(computeArr));
+
         if(useGain){
             return AttributeMeasures.measureInformationGain(computeArr);
         } else {

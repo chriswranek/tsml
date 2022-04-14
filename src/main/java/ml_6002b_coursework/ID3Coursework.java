@@ -22,6 +22,10 @@
 
 package ml_6002b_coursework;
 
+import cwranek.WekaTools;
+import experiments.data.DatasetLoading;
+import utilities.ClassifierTools;
+import utilities.InstanceTools;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Sourcable;
 import weka.core.*;
@@ -29,6 +33,7 @@ import weka.core.Capabilities.Capability;
 import weka.core.TechnicalInformation.Field;
 import weka.core.TechnicalInformation.Type;
 
+import java.io.IOException;
 import java.util.Enumeration;
 
 /**
@@ -157,6 +162,7 @@ public class ID3Coursework
 
     // attributes
     result.enable(Capability.NOMINAL_ATTRIBUTES);
+    result.enable(Capability.NUMERIC_ATTRIBUTES);
 
     // class
     result.enable(Capability.NOMINAL_CLASS);
@@ -202,6 +208,8 @@ public class ID3Coursework
       return;
     }
 
+    //System.out.println(data.numAttributes());
+
     // Compute attribute with maximum information gain.
     double[] infoGains = new double[data.numAttributes()];
     Enumeration attEnum = data.enumerateAttributes();
@@ -225,7 +233,12 @@ public class ID3Coursework
       m_ClassValue = Utils.maxIndex(m_Distribution);
       m_ClassAttribute = data.classAttribute();
     } else {
-      Instances[] splitData = attSplit.splitData(data, m_Attribute);
+      Instances[] splitData;
+      if(m_Attribute.isNumeric()){
+        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 50);
+      } else {
+        splitData = attSplit.splitData(data, m_Attribute);
+      }
       m_Successors = new ID3Coursework[m_Attribute.numValues()];
       for (int j = 0; j < m_Attribute.numValues(); j++) {
         m_Successors[j] = new ID3Coursework();
@@ -442,7 +455,42 @@ public class ID3Coursework
    *
    * @param args the options for the classifier
    */
-  public static void main(String[] args) {
-    runClassifier(new ID3Coursework(), args);
+  public static void main(String[] args) throws Exception {
+
+
+    //runClassifier(new ID3Coursework(), args);
+    String testDataLocation = "C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
+
+    Instances test = DatasetLoading.loadData(testDataLocation);
+
+    ID3Coursework IGClassifier = new ID3Coursework();
+    IGClassifier.setOptions(0);
+
+    ID3Coursework giniClassifier = new ID3Coursework();
+    giniClassifier.setOptions(1);
+
+    ID3Coursework chiClassifier = new ID3Coursework();
+    chiClassifier.setOptions(2);
+
+    Instances[] igTestSplit = InstanceTools.resampleInstances(test, 0 , Math.random());
+
+    Instances[] giniTestSplit = InstanceTools.resampleInstances(test, 0 , Math.random());
+
+    Instances[] chiTestSplit = InstanceTools.resampleInstances(test, 0 , Math.random());
+
+    IGClassifier.buildClassifier(igTestSplit[0]);
+
+    giniClassifier.buildClassifier(giniTestSplit[0]);
+
+    chiClassifier.buildClassifier(chiTestSplit[0]);
+
+    System.out.println("DT using measure Information Gain on optdigits has test accuracy = " + ClassifierTools.accuracy(igTestSplit[1], IGClassifier));
+
+    System.out.println("DT using measure Gini Index on optdigits has test accuracy = " + ClassifierTools.accuracy(giniTestSplit[1], giniClassifier));
+
+    System.out.println("DT using measure Chi Squared Statistic on optdigits has test accuracy = " + ClassifierTools.accuracy(chiTestSplit[1], chiClassifier));
+
+
+
   }
 }

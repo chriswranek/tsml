@@ -37,4 +37,35 @@ public interface AttributeSplitMeasure {
         return splitData;
     }
 
+
+    /**
+     * Splits a dataset according to the values of a numeric attribute.
+     *
+     * @param data the data which is to be split
+     * @param value the numeric value to be used for binary splitting
+     * @return the sets of instances produced by the split above and below the value
+     */
+    default Instances[] splitDataOnNumeric(Instances data, Attribute att, int value) {
+
+        Instances[] splitData = new Instances[2];
+
+        for (int i = 0; i < splitData.length; i++) {
+            splitData[i] = new Instances(data, data.numInstances());
+        }
+
+        for (int i = 0; i < data.numInstances(); i++) {
+            if(data.get(i).value(att) < value){
+                splitData[0].add(data.get(i));
+            } else {
+                splitData[1].add(data.get(i));
+            }
+
+        }
+
+        for (Instances splitDatum : splitData) {
+            splitDatum.compactify();
+        }
+        return splitData;
+    }
+
 }

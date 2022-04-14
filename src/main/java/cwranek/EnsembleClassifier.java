@@ -6,6 +6,7 @@ import weka.classifiers.trees.J48;
 import weka.core.Instance;
 import weka.core.Instances;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class EnsembleClassifier extends AbstractClassifier {
@@ -64,6 +65,7 @@ public class EnsembleClassifier extends AbstractClassifier {
 
         return maxNum;
     }
+
 
 
 }

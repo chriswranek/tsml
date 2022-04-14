@@ -21,7 +21,6 @@ public class AttributeMeasures {
 
         ArrayList<Integer> attValues = new ArrayList<>();
         ArrayList<Integer> classValues = new ArrayList<>();
-        ArrayList<Integer> attWins = new ArrayList<>();
 
         for (int[] ints : arr) {
             if (!attValues.contains(ints[0])) {
@@ -34,30 +33,44 @@ public class AttributeMeasures {
 
         int[] attCount = new int[attValues.size()];
         int[] classCount = new int[classValues.size()];
+
+
         double[] attEntropies = new double[attCount.length];
         double numInstances = 0;
 
+        //find way of tracking indexes in the array for attributes, atts with values higher than the att size won't work
         for (int[] ints: arr) {
-            attCount[ints[0]]++;
-            classCount[ints[1]]++;
+            attCount[attValues.indexOf(ints[0])]++;
+            classCount[classValues.indexOf(ints[1])]++;
             numInstances++;
         }
 
-        double rootEntropy = -((classCount[1]/numInstances) * log2(classCount[1]/numInstances) + (classCount[0]/numInstances) * log2(classCount[0]/numInstances));
+        double rootEntropy = 0;
 
-        for (int i: attValues) {
-            int winCount = 0;
-            for (int[] ints: arr) {
-                if(ints[0] == i && ints[1] == 1){
-                    winCount++;
-                }
-            }
-            attWins.add(winCount);
+        for (int i = 0; i < classCount.length; i++) {
+            rootEntropy += (classCount[i]/numInstances) * log2(classCount[i]/numInstances);
         }
 
-        for (int i = 0; i < attValues.size(); i++) {
-            attEntropies[i] = -(((double)attWins.get(i) / (double)attCount[i]) * log2((double)attWins.get(i) / (double)attCount[i]) +
-                    (((double)attCount[i] - (double)attWins.get(i)) / (double)attCount[i]) * log2((attCount[i] - (double)attWins.get(i)) / (double)attCount[i]));
+        rootEntropy *= -1;
+
+        for (int i = 0; i < attCount.length; i++) {
+            //get class count for each attribute value compared to class count for the whole dataset
+
+            int[] attClassCount = new int[classCount.length];
+
+            for (int[] ints: arr) {
+                if(ints[0] == attValues.get(i)){
+                    attClassCount[classValues.indexOf(ints[1])]++;
+                }
+            }
+
+            //Get local entropy for each class value, then sum them to get an entropy for each attribute value
+            for (int k : attClassCount) {
+                attEntropies[i] += ((double) k / attCount[i]) * log2((double) k / attCount[i]);
+                //System.out.println(attEntropies[i]);
+            }
+
+            attEntropies[i] *= -1;
 
             if(Double.isNaN(attEntropies[i])){
                 attEntropies[i] = 0;
@@ -96,7 +109,6 @@ public class AttributeMeasures {
         //Get attribute counts and class counts for each attribute value
         ArrayList<Integer> attValues = new ArrayList<>();
         ArrayList<Integer> classValues = new ArrayList<>();
-        ArrayList<Integer> attWins = new ArrayList<>();
 
         for (int[] ints : arr) {
             if (!attValues.contains(ints[0])) {
@@ -112,28 +124,38 @@ public class AttributeMeasures {
         double[] attGinis = new double[attCount.length];
         double numInstances = 0;
 
+        //find way of tracking indexes in the array for attributes, atts with values higher than the att size won't work
         for (int[] ints: arr) {
-            attCount[ints[0]]++;
-            classCount[ints[1]]++;
+            attCount[attValues.indexOf(ints[0])]++;
+            classCount[classValues.indexOf(ints[1])]++;
             numInstances++;
         }
 
-        for (int i: attValues) {
-            int winCount = 0;
-            for (int[] ints: arr) {
-                if(ints[0] == i && ints[1] == 1){
-                    winCount++;
-                }
-            }
-            attWins.add(winCount);
-        }
+        //Calculate impurity at root
 
-        //Calculate impurity at root.
-        double rootGiniIndex = 1 - (Math.pow(classCount[1] / numInstances, 2) + Math.pow(classCount[0] / numInstances, 2));
+        double localGiniIndex = 0;
+        for (int i = 0; i < classCount.length; i++) {
+            localGiniIndex += (Math.pow(classCount[i] / numInstances, 2));
+
+        }
+        double rootGiniIndex = 1 - localGiniIndex;
+
 
         for (int i = 0; i < attValues.size(); i++) {
 
-            attGinis[i] = 1 - (Math.pow((double)attWins.get(i) / attCount[i], 2) + Math.pow(((double)attCount[i] - attWins.get(i)) / attCount[i], 2));
+            int[] attClassCount = new int[classCount.length];
+
+            for (int[] ints: arr) {
+                if(ints[0] == attValues.get(i)){
+                    attClassCount[classValues.indexOf(ints[1])]++;
+                }
+            }
+
+            for(int k : attClassCount){
+                attGinis[i] += Math.pow((double)k / attCount[i], 2);
+            }
+
+            attGinis[i] = 1 - attGinis[i];
 
             if(Double.isNaN(attGinis[i])){
                 attGinis[i] = 0;
@@ -148,10 +170,9 @@ public class AttributeMeasures {
     }
 
     public static double measureChiSquared(int[][] arr){
+        //Get attribute counts and class counts for each attribute value
         ArrayList<Integer> attValues = new ArrayList<>();
         ArrayList<Integer> classValues = new ArrayList<>();
-        ArrayList<Integer> attWins = new ArrayList<>();
-        ArrayList<Integer> attLosses = new ArrayList<>();
 
         for (int[] ints : arr) {
             if (!attValues.contains(ints[0])) {
@@ -164,49 +185,42 @@ public class AttributeMeasures {
 
         int[] attCount = new int[attValues.size()];
         int[] classCount = new int[classValues.size()];
-        double[] attGinis = new double[attCount.length];
-
         double numInstances = 0;
 
+        //find way of tracking indexes in the array for attributes, atts with values higher than the att size won't work
         for (int[] ints: arr) {
-            attCount[ints[0]]++;
-            classCount[ints[1]]++;
+            attCount[attValues.indexOf(ints[0])]++;
+            classCount[classValues.indexOf(ints[1])]++;
             numInstances++;
         }
 
-        for (int i: attValues) {
-            int winCount = 0;
-            int lossCount = 0;
-            for (int[] ints: arr) {
-                if(ints[0] == i && ints[1] == 1){
-                    winCount++;
-                } else if (ints[0] == i && ints[1] == 0){
-                    lossCount++;
-                }
+        double[][] classPreds = new double[classCount.length][attCount.length];
+
+        for (int i = 0; i < classCount.length; i++) {
+            double classProb = classCount[i] / numInstances;
+
+            for (int j = 0; j < attCount.length; j++) {
+                classPreds[i][j] = attCount[j] * classProb;
             }
-            attWins.add(winCount);
-            attLosses.add(lossCount);
-        }
-
-        double[] predWins = new double[attCount.length];
-        double[] predLoss = new double[attCount.length];
-
-        double winProb = classCount[1] / numInstances;
-        double lossProb = classCount[0] / numInstances;
-
-        for (int i = 0; i < attCount.length; i++) {
-            predWins[i] = attCount[i] * winProb;
-            predLoss[i] = attCount[i] * lossProb;
         }
 
         double chiSquaredIndex = 0;
 
         for (int i = 0; i < attCount.length; i++) {
-            double winRatio = Math.pow(attWins.get(i) - predWins[i], 2) / predWins[i];
 
-            double lossRatio = Math.pow(attLosses.get(i) - predLoss[i], 2) / predLoss[i];
+            int[] attClassCount = new int[classCount.length];
 
-            chiSquaredIndex += winRatio + lossRatio;
+            for (int[] ints: arr) {
+                if(ints[0] == attValues.get(i)){
+                    attClassCount[classValues.indexOf(ints[1])]++;
+                }
+            }
+
+            for (int j = 0; j < attClassCount.length; j++) {
+                double classRatio = Math.pow(attClassCount[j] - classPreds[j][i], 2) / classPreds[j][i];
+
+                chiSquaredIndex += classRatio;
+            }
         }
 
         return chiSquaredIndex;
@@ -215,38 +229,18 @@ public class AttributeMeasures {
 
     public static void main(String[] args) throws Exception {
 
-        int[][] outlookTest = {{0, 0}, {0, 0}, {0, 0}, {0, 1}, {0, 1}};
-
-        int[][] chiSquaredTest = {{2, 3, 5}, {4, 0, 4}, {3, 2, 5}, {9, 5, 14}};
-
-        int[][] peatyTest = {{1, 1}, {1, 1}, {1, 1}, {1, 1}, {0, 1}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
-
-        String testDataLocation = "C:\\Users\\block\\Desktop\\Machine Learning\\Whisky_TRAIN.arff";
+        String testDataLocation = "C:\\Users\\block\\Desktop\\Machine Learning\\Playgolf_TRAIN.arff";
 
         Instances test = DatasetLoading.loadData(testDataLocation);
 
-        //System.out.println("Information gain for Test Data = " + measureInformationGain(outlookTest));
-        //System.out.println("Information gain ratio for Test Data = " + measureInformationGainRatio(outlookTest));
-
         //System.out.println(" ");
         //System.out.println(" ");
-
-        //System.out.println(measureGini(peatyTest));
-
-        //System.out.println(measureChiSquared(peatyTest));
 
         double a = 0.25;
 
         double b = 1 - a;
 
-        //System.out.println(a);
-
-        //System.out.println(b);
-
         double rootEnt = -(a * log2(a) + (b) * log2(b));
-
-
-        //System.out.println(rootEnt);
 
         IGAttributeSplitMeasure igAtt = new IGAttributeSplitMeasure();
 
