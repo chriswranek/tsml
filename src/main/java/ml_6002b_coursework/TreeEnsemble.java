@@ -142,11 +142,12 @@ public class TreeEnsemble extends AbstractClassifier {
         System.out.println(" ");
 
 
-        String UCIDatasetLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Continuous\\";
+        String UCIDatasetLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\";
 
-        System.out.println(" number of problems = "+ DatasetLists.continuousAttributeProblems.length);
+        System.out.println(DatasetLists.nominalAttributeProblems.length);
 
-        for(String str : DatasetLists.continuousAttributeProblems){
+
+        for(String str : DatasetLists.nominalAttributeProblems){
 
             Instances trainTest = DatasetLoading.loadData(UCIDatasetLocation+str+"\\"+str+".arff");
             Instances[] split = InstanceTools.resampleInstances(trainTest, 0, 0.7);
@@ -164,6 +165,7 @@ public class TreeEnsemble extends AbstractClassifier {
             System.out.println(" ");
             System.out.println(" ");
         }
+
 
 
         //for (Instance instance: trainTestSplit[1]) { System.out.println(treeEnsemble.classifyInstance(instance)); }
