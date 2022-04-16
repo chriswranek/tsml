@@ -463,46 +463,6 @@ public class ID3Coursework
 
 
     //runClassifier(new ID3Coursework(), args);
-    //String testDataLocation = "C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
-
-    //Instances test = DatasetLoading.loadData(testDataLocation);
-
-    /*
-    ID3Coursework IGClassifier = new ID3Coursework();
-    IGClassifier.setOptions(0);
-
-    ID3Coursework giniClassifier = new ID3Coursework();
-    giniClassifier.setOptions(1);
-
-    ID3Coursework chiClassifier = new ID3Coursework();
-    chiClassifier.setOptions(2);
-
-    J48 j48 = new J48();
-
-    Instances[] igTestSplit = InstanceTools.resampleInstances(test, 0 , Math.random());
-
-    Instances[] giniTestSplit = InstanceTools.resampleInstances(test, 0 , Math.random());
-
-    Instances[] chiTestSplit = InstanceTools.resampleInstances(test, 0 , Math.random());
-
-    Instances[] j48testSplit = InstanceTools.resampleInstances(test, 0, Math.random());
-
-    IGClassifier.buildClassifier(igTestSplit[0]);
-
-    giniClassifier.buildClassifier(giniTestSplit[0]);
-
-    chiClassifier.buildClassifier(chiTestSplit[0]);
-
-    j48.buildClassifier(j48testSplit[0]);
-
-    System.out.println("DT using measure Information Gain on optdigits has test accuracy = " + ClassifierTools.accuracy(igTestSplit[1], IGClassifier));
-
-    System.out.println("DT using measure Gini Index on optdigits has test accuracy = " + ClassifierTools.accuracy(giniTestSplit[1], giniClassifier));
-
-    System.out.println("DT using measure Chi Squared Statistic on optdigits has test accuracy = " + ClassifierTools.accuracy(chiTestSplit[1], chiClassifier));
-
-    System.out.println("DT using measure J48 on optdigits has test accuracy = " + ClassifierTools.accuracy(j48testSplit[1], j48));
-    */
 
     double igAccuracy = 0;
     double giniAccuracy = 0;
@@ -519,40 +479,40 @@ public class ID3Coursework
       Instances[] split = InstanceTools.resampleInstances(trainTest, 0, 0.7);
 
 
-      /*
+
       ID3Coursework IGClassifier = new ID3Coursework();
       IGClassifier.setOptions(0);
 
       IGClassifier.buildClassifier(split[0]);
 
       igAccuracy += ClassifierTools.accuracy(split[1], IGClassifier);
-      */
 
-      /*
+
+
       ID3Coursework giniClassifier = new ID3Coursework();
       giniClassifier.setOptions(1);
 
       giniClassifier.buildClassifier(split[0]);
 
       giniAccuracy += ClassifierTools.accuracy(split[1], giniClassifier);
-      */
 
-      /*
+
+
       ID3Coursework chiClassifier = new ID3Coursework();
       chiClassifier.setOptions(2);
 
       chiClassifier.buildClassifier(split[0]);
 
       chiAccuracy += ClassifierTools.accuracy(split[1], chiClassifier);
-      */
 
-      /*
+
+
       J48 j48 = new J48();
 
       j48.buildClassifier(split[0]);
 
       j48Accuracy += ClassifierTools.accuracy(split[1], j48);
-      */
+
 
 
       Id3 id3 = new Id3();
@@ -565,13 +525,13 @@ public class ID3Coursework
     }
 
 
-    //igAccuracy /= DatasetLists.nominalAttributeProblems.length;
+    igAccuracy /= DatasetLists.nominalAttributeProblems.length;
 
-    //giniAccuracy /= DatasetLists.nominalAttributeProblems.length;
+    giniAccuracy /= DatasetLists.nominalAttributeProblems.length;
 
-    //chiAccuracy /= DatasetLists.nominalAttributeProblems.length;
+    chiAccuracy /= DatasetLists.nominalAttributeProblems.length;
 
-    //j48Accuracy /= DatasetLists.nominalAttributeProblems.length;
+    j48Accuracy /= DatasetLists.nominalAttributeProblems.length;
 
     id3Accuracy /= DatasetLists.nominalAttributeProblems.length;
 
@@ -584,6 +544,9 @@ public class ID3Coursework
     System.out.println("J48 Accuracy: " + j48Accuracy);
 
     System.out.println("ID3 Accuracy: " + id3Accuracy);
+
+
+
 
 
   }

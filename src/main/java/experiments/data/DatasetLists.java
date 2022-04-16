@@ -1511,6 +1511,31 @@ image
 spambase  
 tiianic    
 */
+
+	public static String[] nominalAttributeProblems={
+			"balance-scale",
+			"chess-krvk",
+			"chess-krvkp",
+			"connect-4",
+			"contraceptive-method",
+			"fertility",
+			"habermans-survival",
+			"hayes-roth",
+			"led-display",
+			"lymphography",
+			"molecular-promoters",
+			"molecular-splice",
+			"monks-1",
+			"monks-2",
+			"monks-3",
+			"nursery",
+			"optdigits",
+			"pendigits",
+			"semeion",
+			"spect-heart",
+			"tic-tac-toe",
+			"zoo"
+	};
   
     public static String[] UCIContinuousFileNames={"abalone","acute-inflammation","acute-nephritis","adult","annealing","arrhythmia","audiology-std","balance-scale","balloons","bank","blood","breast-cancer","breast-cancer-wisc","breast-cancer-wisc-diag","breast-cancer-wisc-prog","breast-tissue","car","cardiotocography-10clases","cardiotocography-3clases",
         "chess-krvk","chess-krvkp","congressional-voting","conn-bench-sonar-mines-rocks","conn-bench-vowel-deterding",

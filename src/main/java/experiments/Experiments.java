@@ -149,7 +149,7 @@ public class Experiments  {
             setupAndRunExperiment(expSettings);
         }
         else {//Manually set args
-            int folds=30;
+            int folds=5;
             String[] settings=new String[9];
 
             /*
@@ -157,9 +157,9 @@ public class Experiments  {
              */
 //            String[] classifiers={"TSF_I","RISE_I","STC_I","CBOSS_I","HIVE-COTEn_I"};
 //            String classifier=classifiers[2];
-            String classifier="STC";//Classifier name: See ClassifierLists for valid options
+            String classifier="ID3CourseworkIG";//Classifier name: See ClassifierLists for valid options
 
-            settings[0]="-dp=C:\\Data Working Area\\Datasets"; //Where to get datasets
+            settings[0]="-dp=src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\"; //Where to get datasets
             settings[1]="-rp=C:\\Experiments\\Results\\"; //Where to write results
             settings[2]="-gtf=false"; //Whether to generate train files or not
             settings[3]="-cn="+classifier; //Classifier name
@@ -169,8 +169,9 @@ public class Experiments  {
             settings[7]="-d=true"; //Debugging
             settings[8]="--force=true"; //Overwrites existing results if true, otherwise set to false
 
-            String[] probFiles= {"ItalyPowerDemand"}; //Problem name(s)
-//            String[] probFiles= DatasetLists.fixedLengthMultivariate;
+            String[] probFiles= DatasetLists.nominalAttributeProblems;
+            //String[] probFiles= {"ItalyPowerDemand"}; //Problem name(s)
+
             /*
              * END OF SETTINGS
              */

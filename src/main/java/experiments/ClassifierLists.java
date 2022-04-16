@@ -20,6 +20,8 @@ import experiments.Experiments.ExperimentalArguments;
 import machine_learning.classifiers.ensembles.ContractRotationForest;
 import machine_learning.classifiers.ensembles.EnhancedRotationForest;
 import machine_learning.classifiers.tuned.TunedClassifier;
+import ml_6002b_coursework.ID3Coursework;
+import ml_6002b_coursework.TreeEnsemble;
 import tsml.classifiers.EnhancedAbstractClassifier;
 import tsml.classifiers.distance_based.distances.dtw.DTWDistance;
 import tsml.classifiers.distance_based.distances.ed.EDistance;
@@ -552,7 +554,7 @@ public class ClassifierLists {
      */
     public static String[] standard= {
         "XGBoostMultiThreaded","XGBoost","SmallTunedXGBoost","RandF","RotF", "ContractRotF","ERotFBag","ERotFOOB","ERotFCV","ERotFTRAIN","PLSNominalClassifier","BayesNet","ED","C45",
-            "SVML","SVMQ","SVMRBF","MLP","Logistic","CAWPE","NN"};
+            "SVML","SVMQ","SVMRBF","MLP","Logistic","CAWPE","NN","ID3CourseworkIG","ID3CourseworkGini","ID3CourseworkChi","TreeEnsemble"};
     public static HashSet<String> standardClassifiers=new HashSet<String>( Arrays.asList(standard));
     private static Classifier setStandardClassifiers(Experiments.ExperimentalArguments exp){
         String classifier=exp.classifierName;
@@ -560,6 +562,21 @@ public class ClassifierLists {
         Classifier c;
         switch(classifier) {
             //TIME DOMAIN CLASSIFIERS
+            case "ID3CourseworkIG":
+                c = new ID3Coursework();
+                ((ID3Coursework)c).setOptions(0);
+                break;
+            case "ID3CourseworkGini":
+                c = new ID3Coursework();
+                ((ID3Coursework)c).setOptions(1);
+                break;
+            case "ID3CourseworkChi":
+                c = new ID3Coursework();
+                ((ID3Coursework)c).setOptions(2);
+                break;
+            case "TreeEnsemble":
+                c = new TreeEnsemble();
+                break;
             case "XGBoostMultiThreaded":
                 c = new TunedXGBoost();
                 break;

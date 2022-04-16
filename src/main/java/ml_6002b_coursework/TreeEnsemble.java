@@ -1,6 +1,7 @@
 package ml_6002b_coursework;
 
 import evaluation.storage.ClassifierResults;
+import experiments.Experiments;
 import experiments.data.DatasetLoading;
 import tsml.classifiers.distance_based.utils.collections.tree.Tree;
 import utilities.ClassifierTools;
@@ -128,9 +129,9 @@ public class TreeEnsemble extends AbstractClassifier {
 
         TreeEnsemble treeEnsemble = new TreeEnsemble();
 
-        treeEnsemble.buildClassifier(trainTestSplit[0]);
+        //treeEnsemble.buildClassifier(trainTestSplit[0]);
 
-        //treeEnsemble.buildRandomSubspace(trainTestSplit[0], 0.5);
+        treeEnsemble.buildRandomSubspace(trainTestSplit[0], 0.5);
 
         //treeEnsemble.averageDistributions = false;
 
@@ -138,15 +139,15 @@ public class TreeEnsemble extends AbstractClassifier {
 
         //for (int i = 0; i < 5; i++) { System.out.println(Arrays.toString(treeEnsemble.distributionForInstance(trainTestSplit[1].get(i)))); }
 
-        System.out.println(" ");
-        System.out.println(" ");
+        //System.out.println(" ");
+        //System.out.println(" ");
 
 
-        String UCIDatasetLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\";
+        //String UCIDatasetLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\";
 
-        System.out.println(DatasetLists.nominalAttributeProblems.length);
+        //System.out.println(DatasetLists.nominalAttributeProblems.length);
 
-
+        /*
         for(String str : DatasetLists.nominalAttributeProblems){
 
             Instances trainTest = DatasetLoading.loadData(UCIDatasetLocation+str+"\\"+str+".arff");
@@ -165,7 +166,7 @@ public class TreeEnsemble extends AbstractClassifier {
             System.out.println(" ");
             System.out.println(" ");
         }
-
+        */
 
 
         //for (Instance instance: trainTestSplit[1]) { System.out.println(treeEnsemble.classifyInstance(instance)); }
@@ -189,9 +190,9 @@ public class TreeEnsemble extends AbstractClassifier {
         }
         */
 
+        String[] str = {"C:\\Experiments\\Results\\","C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\","5","false","C45","0"};
 
-
-
+        experiments.CollateResults.collate(str);
 
     }
 }

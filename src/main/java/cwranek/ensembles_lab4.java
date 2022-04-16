@@ -413,12 +413,12 @@ static String[] problems={
         //naiveVsNet();
         //classifyResults();
 
-        String[] str = {"C:\\Users\\block\\Desktop\\Machine Learning\\Results\\UCR\\Python\\","C:\\Temp\\UCIContinuous\\","1","false","NaiveBayes","0"};
+        String[] str = {"C:\\Users\\block\\Desktop\\Machine Learning\\Results\\UCR\\Python\\","C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Continuous\\","1","false","NaiveBayes","0"};
 
-        String[] netStr = {"C:\\Users\\block\\Desktop\\Machine Learning\\Results\\UCR\\Python\\","C:\\Temp\\UCIContinuous\\","1","false","bayesNet","0"};
+        //String[] netStr = {"C:\\Users\\block\\Desktop\\Machine Learning\\Results\\UCR\\Python\\","C:\\Temp\\UCIContinuous\\","1","false","bayesNet","0"};
 
         experiments.CollateResults.collate(str);
 
-        experiments.CollateResults.collate(netStr);
+        //experiments.CollateResults.collate(netStr);
     }
 }
