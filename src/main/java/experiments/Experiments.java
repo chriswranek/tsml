@@ -149,7 +149,7 @@ public class Experiments  {
             setupAndRunExperiment(expSettings);
         }
         else {//Manually set args
-            int folds=5;
+            int folds=10;
             String[] settings=new String[9];
 
             /*
@@ -157,7 +157,7 @@ public class Experiments  {
              */
 //            String[] classifiers={"TSF_I","RISE_I","STC_I","CBOSS_I","HIVE-COTEn_I"};
 //            String classifier=classifiers[2];
-            String classifier="ID3CourseworkIG";//Classifier name: See ClassifierLists for valid options
+            String classifier="RotF";//Classifier name: See ClassifierLists for valid options
 
             settings[0]="-dp=src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\"; //Where to get datasets
             settings[1]="-rp=C:\\Experiments\\Results\\"; //Where to write results
@@ -165,8 +165,8 @@ public class Experiments  {
             settings[3]="-cn="+classifier; //Classifier name
             settings[4]="-dn="; //Problem name, don't change here as it is overwritten by probFiles
             settings[5]="-f=1"; //Fold number (fold number 1 is stored as testFold0.csv, its a cluster thing)
-            settings[6]="-ctr=600s"; //Time contract
-            settings[7]="-d=true"; //Debugging
+            settings[6]="-ctr=1000s"; //Time contract
+            settings[7]="-d=false"; //Debugging
             settings[8]="--force=true"; //Overwrites existing results if true, otherwise set to false
 
             String[] probFiles= DatasetLists.nominalAttributeProblems;

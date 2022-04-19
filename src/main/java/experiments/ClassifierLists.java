@@ -52,6 +52,10 @@ import tsml.classifiers.shapelet_based.FastShapelets;
 import tsml.classifiers.shapelet_based.LearnShapelets;
 import tsml.classifiers.shapelet_based.ShapeletTree;
 import tsml.transformers.*;
+import weka.classifiers.meta.Bagging;
+import weka.classifiers.rules.DecisionTable;
+import weka.classifiers.rules.ZeroR;
+import weka.classifiers.trees.*;
 import weka.core.EuclideanDistance;
 import weka.core.Randomizable;
 import machine_learning.classifiers.ensembles.CAWPE;
@@ -67,8 +71,6 @@ import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.supportVector.PolyKernel;
 import weka.classifiers.functions.supportVector.RBFKernel;
 import weka.classifiers.meta.RotationForest;
-import weka.classifiers.trees.J48;
-import weka.classifiers.trees.RandomForest;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -554,7 +556,8 @@ public class ClassifierLists {
      */
     public static String[] standard= {
         "XGBoostMultiThreaded","XGBoost","SmallTunedXGBoost","RandF","RotF", "ContractRotF","ERotFBag","ERotFOOB","ERotFCV","ERotFTRAIN","PLSNominalClassifier","BayesNet","ED","C45",
-            "SVML","SVMQ","SVMRBF","MLP","Logistic","CAWPE","NN","ID3CourseworkIG","ID3CourseworkGini","ID3CourseworkChi","TreeEnsemble"};
+            "SVML","SVMQ","SVMRBF","MLP","Logistic","CAWPE","NN","ID3CourseworkIG","ID3CourseworkGini","ID3CourseworkChi","TreeEnsemble","Bagging","DecisionStump","DecisionTable",
+            "HoeffdingTree","NaiveBayes","SimpleCart","ZeroR"};
     public static HashSet<String> standardClassifiers=new HashSet<String>( Arrays.asList(standard));
     private static Classifier setStandardClassifiers(Experiments.ExperimentalArguments exp){
         String classifier=exp.classifierName;
@@ -562,6 +565,27 @@ public class ClassifierLists {
         Classifier c;
         switch(classifier) {
             //TIME DOMAIN CLASSIFIERS
+            case "Bagging":
+                c = new Bagging();
+                break;
+            case "DecisionStump":
+                c = new DecisionStump();
+                break;
+            case "DecisionTable":
+                c = new DecisionTable();
+                break;
+            case "HoeffdingTree":
+                c = new HoeffdingTree();
+                break;
+            case "NaiveBayes":
+                c = new NaiveBayes();
+                break;
+            case "SimpleCart":
+                c = new SimpleCart();
+                break;
+            case "ZeroR":
+                c = new ZeroR();
+                break;
             case "ID3CourseworkIG":
                 c = new ID3Coursework();
                 ((ID3Coursework)c).setOptions(0);
@@ -591,12 +615,12 @@ public class ClassifierLists {
                 break;
             case "RandF":
                 RandomForest r=new RandomForest();
-                r.setNumTrees(500);
+                r.setNumTrees(50);
                 c = r;
                 break;
             case "RotF":
                 RotationForest rf=new RotationForest();
-                rf.setNumIterations(200);
+                rf.setNumIterations(20);
                 c = rf;
                 break;
             case "ContractRotF":

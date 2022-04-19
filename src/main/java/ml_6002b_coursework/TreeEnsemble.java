@@ -7,7 +7,9 @@ import tsml.classifiers.distance_based.utils.collections.tree.Tree;
 import utilities.ClassifierTools;
 import utilities.InstanceTools;
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.trees.RandomForest;
 import weka.core.*;
+import weka.filters.unsupervised.attribute.Discretize;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,10 +22,35 @@ public class TreeEnsemble extends AbstractClassifier {
     boolean averageDistributions;
     ID3Coursework[] treeEnsemble;
     double[] classDistro;
+    double attProp = 0.5;
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
 
+        treeEnsemble = new ID3Coursework[numTrees];
+
+        for (int i = 0; i < numTrees; i++) {
+            treeEnsemble[i] = new ID3Coursework();
+        }
+
+        for (int i = 0; i < numTrees; i++) {
+
+            Instances tempData = new Instances(data);
+
+            for (int j = 0; j < (int)(data.numAttributes() * attProp); j++) {
+                Random rand = new Random();
+
+                Attribute index = tempData.attribute(rand.nextInt(data.numAttributes()));
+
+                tempData.deleteWithMissing(index);
+            }
+
+            treeEnsemble[i].buildClassifier(tempData);
+        }
+
+        classDistro = new double[data.numClasses()];
+
+        /*
         treeEnsemble = new ID3Coursework[numTrees];
 
         for (int i = 0; i < numTrees; i++) {
@@ -42,6 +69,7 @@ public class TreeEnsemble extends AbstractClassifier {
         }
 
         classDistro = new double[data.numClasses()];
+        */
     }
 
     public void buildRandomSubspace(Instances data, double attProp) throws Exception {
@@ -121,17 +149,15 @@ public class TreeEnsemble extends AbstractClassifier {
 
     public static void main(String[] args) throws Exception {
 
-        String testDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
 
-        Instances optDigitsTest = DatasetLoading.loadData(testDataLocation);
 
-        Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsTest, 0, 0.7);
+        //Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsTest, 0, 0.7);
 
-        TreeEnsemble treeEnsemble = new TreeEnsemble();
+        //TreeEnsemble treeEnsemble = new TreeEnsemble();
 
         //treeEnsemble.buildClassifier(trainTestSplit[0]);
 
-        treeEnsemble.buildRandomSubspace(trainTestSplit[0], 0.5);
+        //treeEnsemble.buildRandomSubspace(trainTestSplit[0], 0.5);
 
         //treeEnsemble.averageDistributions = false;
 
@@ -190,9 +216,20 @@ public class TreeEnsemble extends AbstractClassifier {
         }
         */
 
-        String[] str = {"C:\\Experiments\\Results\\","C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\","5","false","C45","0"};
+        //String[] str = {"C:\\Experiments\\Results\\","C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\","30","false","RotF","0"};
 
-        experiments.CollateResults.collate(str);
+        //experiments.CollateResults.collate(str);
+
+        String testDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
+
+        Instances fiftywords = DatasetLoading.loadData(testDataLocation);
+
+        Discretize discretize = new Discretize();
+
+        System.out.println(discretize.getBins());
+
+
+
 
     }
 }
