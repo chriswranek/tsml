@@ -232,20 +232,17 @@ public class TreeEnsemble extends AbstractClassifier {
             System.out.println(fiftyWordsTrain.get(i));
         }
 
-        Filter filter = new Discretize();
-
-
-
         Discretize discretize = new Discretize();
 
         discretize.setBins(10);
 
         discretize.setInputFormat(fiftyWordsTrain);
 
+        discretize.setOutputFormat();
 
+        System.out.println(discretize.getOutputFormat());
 
-        //System.out.println(discretize.getOutputFormat());
-
+        /*
         int instanceCount = 0;
         for (Instance inst: fiftyWordsTrain) {
             discretize.input(inst);
@@ -261,6 +258,8 @@ public class TreeEnsemble extends AbstractClassifier {
         for (int i = 0; i < 5; i++) {
             System.out.println(fiftyWordsTrain.get(i));
         }
+
+         */
 
 
 
