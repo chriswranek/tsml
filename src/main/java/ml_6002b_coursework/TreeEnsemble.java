@@ -9,6 +9,7 @@ import utilities.InstanceTools;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.trees.RandomForest;
 import weka.core.*;
+import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Discretize;
 
 import java.io.IOException;
@@ -220,13 +221,48 @@ public class TreeEnsemble extends AbstractClassifier {
 
         //experiments.CollateResults.collate(str);
 
-        String testDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
+        String trainDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\FiftyWords\\FiftyWords_TRAIN.arff";
 
-        Instances fiftywords = DatasetLoading.loadData(testDataLocation);
+        String testDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\FiftyWords\\FiftyWords_TEST.arff";
+
+        Instances fiftyWordsTrain = DatasetLoading.loadData(trainDataLocation);
+        Instances fiftyWordsTest = DatasetLoading.loadData(testDataLocation);
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println(fiftyWordsTrain.get(i));
+        }
+
+        Filter filter = new Discretize();
+
+
 
         Discretize discretize = new Discretize();
 
-        System.out.println(discretize.getBins());
+        discretize.setBins(10);
+
+        discretize.setInputFormat(fiftyWordsTrain);
+
+
+
+        //System.out.println(discretize.getOutputFormat());
+
+        int instanceCount = 0;
+        for (Instance inst: fiftyWordsTrain) {
+            discretize.input(inst);
+
+            fiftyWordsTrain.remove(instanceCount);
+
+            fiftyWordsTrain.add(discretize.output());
+
+
+            instanceCount++;
+        }
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println(fiftyWordsTrain.get(i));
+        }
+
+
 
 
 

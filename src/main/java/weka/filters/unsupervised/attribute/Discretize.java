@@ -1042,7 +1042,7 @@ public class Discretize
    * Set the output format. Takes the currently defined cutpoints and
    * m_InputFormat and calls setOutputFormat(Instances) appropriately.
    */
-  protected void setOutputFormat() {
+  public void setOutputFormat() {
 
     if (m_CutPoints == null) {
       setOutputFormat(null);
