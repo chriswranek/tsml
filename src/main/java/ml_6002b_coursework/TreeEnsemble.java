@@ -147,6 +147,38 @@ public class TreeEnsemble extends AbstractClassifier {
         return largestIndex;
     }
 
+    public Instances discretizeDatset(Instances instances) throws Exception {
+        Discretize discretize = new Discretize();
+
+        discretize.setBins(10);
+
+        discretize.setInputFormat(instances);
+
+        int[] attIndices = new int[instances.numAttributes()];
+
+        for (int i = 0; i < instances.numAttributes(); i++) {
+            attIndices[i] = i;
+        }
+
+        discretize.setAttributeIndicesArray(attIndices);
+
+        discretize.setUseBinNumbers(true);
+
+        for (Instance inst: instances) {
+            discretize.input(inst);
+        }
+
+        discretize.batchFinished();
+
+        Instances discretizedInstances = new Instances(instances, 0);
+
+        for (int i = 0; i < instances.numInstances(); i++) {
+            discretizedInstances.add(discretize.output());
+        }
+
+        return discretizedInstances;
+    }
+
 
     public static void main(String[] args) throws Exception {
 
@@ -228,38 +260,10 @@ public class TreeEnsemble extends AbstractClassifier {
         Instances fiftyWordsTrain = DatasetLoading.loadData(trainDataLocation);
         Instances fiftyWordsTest = DatasetLoading.loadData(testDataLocation);
 
-        for (int i = 0; i < 5; i++) {
-            System.out.println(fiftyWordsTrain.get(i));
-        }
+        //for (int i = 0; i < 5; i++) { System.out.println(fiftyWordsTrain.get(i)); }
 
-        Discretize discretize = new Discretize();
+        di
 
-        discretize.setBins(10);
-
-        discretize.setInputFormat(fiftyWordsTrain);
-
-        discretize.setOutputFormat();
-
-        System.out.println(discretize.getOutputFormat());
-
-        /*
-        int instanceCount = 0;
-        for (Instance inst: fiftyWordsTrain) {
-            discretize.input(inst);
-
-            fiftyWordsTrain.remove(instanceCount);
-
-            fiftyWordsTrain.add(discretize.output());
-
-
-            instanceCount++;
-        }
-
-        for (int i = 0; i < 5; i++) {
-            System.out.println(fiftyWordsTrain.get(i));
-        }
-
-         */
 
 
 

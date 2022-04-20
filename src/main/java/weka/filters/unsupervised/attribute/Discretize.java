@@ -727,6 +727,7 @@ public class Discretize
   public void setAttributeIndicesArray(int [] attributes) {
 
     setAttributeIndices(Range.indicesToRangeList(attributes));
+    m_DiscretizeCols.setUpper(attributes.length);
   }
 
   /**
