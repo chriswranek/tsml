@@ -1,18 +1,12 @@
 package ml_6002b_coursework;
 
-import evaluation.storage.ClassifierResults;
-import experiments.Experiments;
 import experiments.data.DatasetLoading;
-import tsml.classifiers.distance_based.utils.collections.tree.Tree;
 import utilities.ClassifierTools;
 import utilities.InstanceTools;
 import weka.classifiers.AbstractClassifier;
-import weka.classifiers.trees.RandomForest;
 import weka.core.*;
-import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Discretize;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -20,10 +14,10 @@ public class TreeEnsemble extends AbstractClassifier {
 
     int numTrees = 50;
     double splitProportion = 0.5;
-    boolean averageDistributions;
+    boolean averageDistributions = false;
     ID3Coursework[] treeEnsemble;
     double[] classDistro;
-    double attProp = 0.5;
+    double attProp = 1.0;
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
@@ -50,27 +44,6 @@ public class TreeEnsemble extends AbstractClassifier {
         }
 
         classDistro = new double[data.numClasses()];
-
-        /*
-        treeEnsemble = new ID3Coursework[numTrees];
-
-        for (int i = 0; i < numTrees; i++) {
-            treeEnsemble[i] = new ID3Coursework();
-        }
-
-        //Instances[] trainTestSplit = InstanceTools.resampleInstances(data, 0, splitProportion);
-
-
-        for (int i = 0; i < numTrees; i++) {
-            Random rand = new Random();
-
-            treeEnsemble[i].setOptions(rand.nextInt(3));
-
-            treeEnsemble[i].buildClassifier(data);
-        }
-
-        classDistro = new double[data.numClasses()];
-        */
     }
 
     public void buildRandomSubspace(Instances data, double attProp) throws Exception {
@@ -119,7 +92,9 @@ public class TreeEnsemble extends AbstractClassifier {
             for (int i = 0; i < numTrees; i++) {
                 double[] tempDistro = treeEnsemble[i].distributionForInstance(instance);
 
-                for (int j = 0; j < tempDistro.length; j++) { classDistro[j] += tempDistro[j]; }
+                for (int j = 0; j < tempDistro.length; j++) {
+                    classDistro[j] += tempDistro[j];
+                }
             }
         } else {
             for (int i = 0; i < numTrees; i++) {
@@ -147,128 +122,45 @@ public class TreeEnsemble extends AbstractClassifier {
         return largestIndex;
     }
 
-    public Instances discretizeDatset(Instances instances) throws Exception {
-        Discretize discretize = new Discretize();
-
-        discretize.setBins(10);
-
-        discretize.setInputFormat(instances);
-
-        int[] attIndices = new int[instances.numAttributes()];
-
-        for (int i = 0; i < instances.numAttributes(); i++) {
-            attIndices[i] = i;
-        }
-
-        discretize.setAttributeIndicesArray(attIndices);
-
-        discretize.setUseBinNumbers(true);
-
-        for (Instance inst: instances) {
-            discretize.input(inst);
-        }
-
-        discretize.batchFinished();
-
-        Instances discretizedInstances = new Instances(instances, 0);
-
-        for (int i = 0; i < instances.numInstances(); i++) {
-            discretizedInstances.add(discretize.output());
-        }
-
-        return discretizedInstances;
-    }
-
 
     public static void main(String[] args) throws Exception {
 
+        String optDigitsDataset = "src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
 
+        Instances optDigitsInstances = DatasetLoading.loadData(optDigitsDataset);
 
-        //Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsTest, 0, 0.7);
+        Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsInstances, 0, Math.random());
 
-        //TreeEnsemble treeEnsemble = new TreeEnsemble();
+        TreeEnsemble optTreeEnsemble = new TreeEnsemble();
 
-        //treeEnsemble.buildClassifier(trainTestSplit[0]);
+        optTreeEnsemble.buildClassifier(trainTestSplit[0]);
 
-        //treeEnsemble.buildRandomSubspace(trainTestSplit[0], 0.5);
-
-        //treeEnsemble.averageDistributions = false;
-
-        //System.out.println(ClassifierTools.accuracy(trainTestSplit[1], treeEnsemble));
-
-        //for (int i = 0; i < 5; i++) { System.out.println(Arrays.toString(treeEnsemble.distributionForInstance(trainTestSplit[1].get(i)))); }
-
-        //System.out.println(" ");
-        //System.out.println(" ");
-
-
-        //String UCIDatasetLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\";
-
-        //System.out.println(DatasetLists.nominalAttributeProblems.length);
-
-        /*
-        for(String str : DatasetLists.nominalAttributeProblems){
-
-            Instances trainTest = DatasetLoading.loadData(UCIDatasetLocation+str+"\\"+str+".arff");
-            Instances[] split = InstanceTools.resampleInstances(trainTest, 0, 0.7);
-
-            double[] classCounts = new double[trainTest.numClasses()];
-
-            for (int i = 0; i < trainTest.numInstances(); i++) {
-                classCounts[(int) trainTest.get(i).classValue()]++;
-            }
-
-            System.out.println(str);
-            System.out.println("Attributes : " + trainTest.numAttributes() + ", Train/Test Cases : " + split[0].numInstances() + "/" + split[1].numInstances());
-            System.out.println("Num Classes : " + trainTest.numClasses() + ", Class distribution : " + Arrays.toString(classCounts));
-
-            System.out.println(" ");
-            System.out.println(" ");
-        }
-        */
-
-
-        //for (Instance instance: trainTestSplit[1]) { System.out.println(treeEnsemble.classifyInstance(instance)); }
-
-        /*
-        String chinaTownTrain = "src\\main\\java\\ml_6002b_coursework\\test_data\\Chinatown_TRAIN.arff";
-        String chinaTownTest = "src\\main\\java\\ml_6002b_coursework\\test_data\\Chinatown_TEST.arff";
-
-        Instances chinaTownTrainData = DatasetLoading.loadData(chinaTownTrain);
-        Instances chinaTownTestData = DatasetLoading.loadData(chinaTownTest);
-
-        TreeEnsemble chinaTownTree = new TreeEnsemble();
-
-        chinaTownTree.buildClassifier(chinaTownTrainData);
-
-        System.out.println(ClassifierTools.accuracy(chinaTownTestData, chinaTownTree));
+        System.out.println("TreeEnsemble on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optTreeEnsemble));
 
         for (int i = 0; i < 5; i++) {
-            //treeEnsemble.distributionForInstance(trainTestSplit[1].get(i));
-            System.out.println(Arrays.toString(chinaTownTree.distributionForInstance(chinaTownTestData.get(i))));
+            System.out.println(Arrays.toString(optTreeEnsemble.distributionForInstance(trainTestSplit[1].get(i))));
         }
-        */
 
-        //String[] str = {"C:\\Experiments\\Results\\","C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\","30","false","RotF","0"};
+        System.out.println(" ");
+        System.out.println(" ");
 
-        //experiments.CollateResults.collate(str);
+        String chinaTownDatasetTrain = "src\\main\\java\\ml_6002b_coursework\\test_data\\ChinaTown_TRAIN.arff";
+        String chinaTownDatasetTest = "src\\main\\java\\ml_6002b_coursework\\test_data\\ChinaTown_TEST.arff";
 
-        String trainDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\FiftyWords\\FiftyWords_TRAIN.arff";
+        Instances chinaTownTrain = DatasetLoading.loadData(chinaTownDatasetTrain);
+        Instances chinaTownTest = DatasetLoading.loadData(chinaTownDatasetTest);
 
-        String testDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\FiftyWords\\FiftyWords_TEST.arff";
+        Instances discretizedChinaTownTrain = Discretize.discretizeDataset(chinaTownTrain);
+        Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest);
 
-        Instances fiftyWordsTrain = DatasetLoading.loadData(trainDataLocation);
-        Instances fiftyWordsTest = DatasetLoading.loadData(testDataLocation);
+        TreeEnsemble chinaEnsemble = new TreeEnsemble();
 
-        //for (int i = 0; i < 5; i++) { System.out.println(fiftyWordsTrain.get(i)); }
+        chinaEnsemble.buildClassifier(discretizedChinaTownTrain);
 
-        di
+        System.out.println("TreeEnsemble on ChinaTown problem has test accuracy = " + ClassifierTools.accuracy(discretizedChinaTownTest, chinaEnsemble));
 
-
-
-
-
-
-
+        for (int i = 0; i < 5; i++) {
+            System.out.println(Arrays.toString(chinaEnsemble.distributionForInstance(discretizedChinaTownTest.get(i))));
+        }
     }
 }

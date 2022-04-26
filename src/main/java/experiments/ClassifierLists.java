@@ -557,7 +557,7 @@ public class ClassifierLists {
     public static String[] standard= {
         "XGBoostMultiThreaded","XGBoost","SmallTunedXGBoost","RandF","RotF", "ContractRotF","ERotFBag","ERotFOOB","ERotFCV","ERotFTRAIN","PLSNominalClassifier","BayesNet","ED","C45",
             "SVML","SVMQ","SVMRBF","MLP","Logistic","CAWPE","NN","ID3CourseworkIG","ID3CourseworkGini","ID3CourseworkChi","TreeEnsemble","Bagging","DecisionStump","DecisionTable",
-            "HoeffdingTree","NaiveBayes","SimpleCart","ZeroR"};
+            "HoeffdingTree","NaiveBayes","SimpleCart","ZeroR","J48"};
     public static HashSet<String> standardClassifiers=new HashSet<String>( Arrays.asList(standard));
     private static Classifier setStandardClassifiers(Experiments.ExperimentalArguments exp){
         String classifier=exp.classifierName;
@@ -565,6 +565,9 @@ public class ClassifierLists {
         Classifier c;
         switch(classifier) {
             //TIME DOMAIN CLASSIFIERS
+            case "J48":
+                c = new J48();
+                break;
             case "Bagging":
                 c = new Bagging();
                 break;

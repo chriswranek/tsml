@@ -35,7 +35,7 @@ import weka.core.*;
 import weka.core.Capabilities.Capability;
 import weka.core.TechnicalInformation.Field;
 import weka.core.TechnicalInformation.Type;
-import weka.filters.supervised.attribute.Discretize;
+import weka.filters.unsupervised.attribute.Discretize;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -108,6 +108,7 @@ public class ID3Coursework
     switch(option){
       case 0:
         attSplit = new IGAttributeSplitMeasure();
+
         break;
       case 1:
         attSplit = new GiniAttributeSplitMeasure();
@@ -238,15 +239,30 @@ public class ID3Coursework
       m_ClassAttribute = data.classAttribute();
     } else {
       Instances[] splitData;
+      splitData = attSplit.splitData(data, m_Attribute);
+
+
+      /*
       if(m_Attribute.isNumeric()){
-        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 50);
+        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 0);
       } else {
         splitData = attSplit.splitData(data, m_Attribute);
       }
-      m_Successors = new ID3Coursework[m_Attribute.numValues()];
-      for (int j = 0; j < m_Attribute.numValues(); j++) {
-        m_Successors[j] = new ID3Coursework();
-        m_Successors[j].makeTree(splitData[j]);
+
+       */
+
+      if(m_Attribute.isNumeric()){
+        m_Successors = new ID3Coursework[10];
+        for (int j = 0; j < 10; j++) {
+          m_Successors[j] = new ID3Coursework();
+          m_Successors[j].makeTree(splitData[j]);
+        }
+      } else {
+        m_Successors = new ID3Coursework[m_Attribute.numValues()];
+        for (int j = 0; j < m_Attribute.numValues(); j++) {
+          m_Successors[j] = new ID3Coursework();
+          m_Successors[j].makeTree(splitData[j]);
+        }
       }
     }
   }
@@ -464,12 +480,12 @@ public class ID3Coursework
 
     //runClassifier(new ID3Coursework(), args);
 
+    /*
     double igAccuracy = 0;
     double giniAccuracy = 0;
     double chiAccuracy = 0;
     double j48Accuracy = 0;
     double id3Accuracy = 0;
-
 
     String UCIDatasetLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\";
 
@@ -544,9 +560,66 @@ public class ID3Coursework
     System.out.println("J48 Accuracy: " + j48Accuracy);
 
     System.out.println("ID3 Accuracy: " + id3Accuracy);
+     */
+
+    String optDigitsDataset = "src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
+
+    Instances optDigitsInstances = DatasetLoading.loadData(optDigitsDataset);
+
+    Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsInstances, 0, Math.random());
+
+    ID3Coursework optIGClassifier = new ID3Coursework();
+    optIGClassifier.setOptions(0);
+
+    optIGClassifier.buildClassifier(trainTestSplit[0]);
+
+    System.out.println("DT using measure Information Gain on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optIGClassifier));
+
+    ID3Coursework optGiniClassifier = new ID3Coursework();
+    optGiniClassifier.setOptions(1);
+
+    optGiniClassifier.buildClassifier(trainTestSplit[0]);
+
+    System.out.println("DT using measure Gini on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optGiniClassifier));
+
+    ID3Coursework optChiClassifier = new ID3Coursework();
+    optChiClassifier.setOptions(2);
+
+    optChiClassifier.buildClassifier(trainTestSplit[0]);
+
+    System.out.println("DT using measure Chi Squared on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optChiClassifier));
 
 
 
+    String chinaTownDatasetTrain = "src\\main\\java\\ml_6002b_coursework\\test_data\\ChinaTown_TRAIN.arff";
+    String chinaTownDatasetTest = "src\\main\\java\\ml_6002b_coursework\\test_data\\ChinaTown_TEST.arff";
+
+    Instances chinaTownTrain = DatasetLoading.loadData(chinaTownDatasetTrain);
+    Instances chinaTownTest = DatasetLoading.loadData(chinaTownDatasetTest);
+
+    Instances discretizedChinaTownTrain = Discretize.discretizeDataset(chinaTownTrain);
+    Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest);
+
+    ID3Coursework IGClassifier = new ID3Coursework();
+    IGClassifier.setOptions(0);
+
+    IGClassifier.buildClassifier(discretizedChinaTownTrain);
+
+    System.out.println("DT using measure Information Gain on ChinaTown problem has test accuracy = " + ClassifierTools.accuracy(discretizedChinaTownTest, IGClassifier));
+
+    ID3Coursework giniClassifier = new ID3Coursework();
+    giniClassifier.setOptions(1);
+
+    giniClassifier.buildClassifier(discretizedChinaTownTrain);
+
+    System.out.println("DT using measure Gini on ChinaTown problem has test accuracy = " + ClassifierTools.accuracy(discretizedChinaTownTest, giniClassifier));
+
+    ID3Coursework chiClassifier = new ID3Coursework();
+    chiClassifier.setOptions(2);
+
+    chiClassifier.buildClassifier(discretizedChinaTownTrain);
+
+    System.out.println("DT using measure Chi Squared on ChinaTown problem has test accuracy = " + ClassifierTools.accuracy(discretizedChinaTownTest, chiClassifier));
 
 
   }

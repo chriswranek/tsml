@@ -22,20 +22,40 @@ public interface AttributeSplitMeasure {
      * @return the sets of instances produced by the split
      */
      default Instances[] splitData(Instances data, Attribute att) {
-        Instances[] splitData = new Instances[att.numValues()];
-        for (int j = 0; j < att.numValues(); j++) {
-            splitData[j] = new Instances(data, data.numInstances());
-        }
-        Enumeration instEnum = data.enumerateInstances();
-        while (instEnum.hasMoreElements()) {
-            Instance inst = (Instance) instEnum.nextElement();
-            splitData[(int) inst.value(att)].add(inst);
-        }
-        for (int i = 0; i < splitData.length; i++) {
-            splitData[i].compactify();
-        }
-        return splitData;
+
+         if(att.isNumeric()){
+             Instances[] splitData = new Instances[10];
+             for (int j = 0; j < 10; j++) {
+                 splitData[j] = new Instances(data, data.numInstances());
+             }
+             Enumeration instEnum = data.enumerateInstances();
+             while (instEnum.hasMoreElements()) {
+                 Instance inst = (Instance) instEnum.nextElement();
+                 splitData[(int) inst.value(att)].add(inst);
+             }
+             for (Instances splitDatum : splitData) {
+                 splitDatum.compactify();
+             }
+             return splitData;
+         } else {
+             Instances[] splitData = new Instances[att.numValues()];
+             for (int j = 0; j < att.numValues(); j++) {
+                 splitData[j] = new Instances(data, data.numInstances());
+             }
+             Enumeration instEnum = data.enumerateInstances();
+             while (instEnum.hasMoreElements()) {
+                 Instance inst = (Instance) instEnum.nextElement();
+                 splitData[(int) inst.value(att)].add(inst);
+             }
+             for (Instances splitDatum : splitData) {
+                 splitDatum.compactify();
+             }
+             return splitData;
+         }
     }
+
+
+
 
 
     /**
@@ -45,7 +65,16 @@ public interface AttributeSplitMeasure {
      * @param value the numeric value to be used for binary splitting
      * @return the sets of instances produced by the split above and below the value
      */
-    default Instances[] splitDataOnNumeric(Instances data, Attribute att, int value) {
+    default Instances[] splitDataOnNumeric(Instances data, Attribute att, double value) {
+
+        double meanValue = 0;
+        if(value != 0){
+            for (int i = 0; i < data.numInstances(); i++) {
+                meanValue += data.get(i).value(att);
+            }
+            meanValue /= data.numInstances();
+            value = meanValue;
+        }
 
         Instances[] splitData = new Instances[2];
 
@@ -59,7 +88,6 @@ public interface AttributeSplitMeasure {
             } else {
                 splitData[1].add(data.get(i));
             }
-
         }
 
         for (Instances splitDatum : splitData) {

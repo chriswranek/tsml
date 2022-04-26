@@ -22,7 +22,7 @@ public class GiniAttributeSplitMeasure implements AttributeSplitMeasure{
 
 
     public static void main(String[] args) throws Exception {
-        String testDataLocation = "C:\\Users\\block\\Desktop\\Machine Learning\\Whisky_TRAIN.arff";
+        String testDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\Whisky_TRAIN.arff";
 
         Instances test = DatasetLoading.loadData(testDataLocation);
 

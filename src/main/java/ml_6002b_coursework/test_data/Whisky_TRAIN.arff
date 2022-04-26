@@ -1,0 +1,19 @@
+@RELATION Whisky
+
+@ATTRIBUTE Peaty {yes, no}
+@ATTRIBUTE Woody {yes, no}
+@ATTRIBUTE Sweet {yes, no}
+@ATTRIBUTE class {Islay, Speyside}
+
+@DATA
+
+yes, no, yes, Islay
+yes, yes, yes, Islay
+yes, no, no, Islay
+yes, no, no, Islay
+no, yes, no, Islay
+no, yes, yes, Speyside
+no, yes, yes, Speyside
+no, yes, yes, Speyside
+no, no, yes, Speyside
+no, no, yes, Speyside

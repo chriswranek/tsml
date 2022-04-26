@@ -60,6 +60,7 @@ import machine_learning.classifiers.ensembles.SaveableEnsemble;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Randomizable;
+import weka.filters.unsupervised.attribute.Discretize;
 
 import static utilities.GenericTools.indexOfMax;
 import static utilities.InstanceTools.*;
@@ -149,7 +150,7 @@ public class Experiments  {
             setupAndRunExperiment(expSettings);
         }
         else {//Manually set args
-            int folds=10;
+            int folds=30;
             String[] settings=new String[9];
 
             /*
@@ -157,10 +158,10 @@ public class Experiments  {
              */
 //            String[] classifiers={"TSF_I","RISE_I","STC_I","CBOSS_I","HIVE-COTEn_I"};
 //            String classifier=classifiers[2];
-            String classifier="RotF";//Classifier name: See ClassifierLists for valid options
+            String classifier="ID3CourseworkChi";//Classifier name: See ClassifierLists for valid options
 
             settings[0]="-dp=src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\"; //Where to get datasets
-            settings[1]="-rp=C:\\Experiments\\Results\\"; //Where to write results
+            settings[1]="-rp=C:\\Experiments\\Results\\DecisionTreeComp\\"; //Where to write results
             settings[2]="-gtf=false"; //Whether to generate train files or not
             settings[3]="-cn="+classifier; //Classifier name
             settings[4]="-dn="; //Problem name, don't change here as it is overwritten by probFiles
@@ -170,7 +171,8 @@ public class Experiments  {
             settings[8]="--force=true"; //Overwrites existing results if true, otherwise set to false
 
             String[] probFiles= DatasetLists.nominalAttributeProblems;
-            //String[] probFiles= {"ItalyPowerDemand"}; //Problem name(s)
+
+            //String[] probFiles= {"FiftyWords"}; //Problem name(s)
 
             /*
              * END OF SETTINGS
@@ -248,6 +250,10 @@ public class Experiments  {
             return null;
 
         Instances[] data = DatasetLoading.sampleDataset(expSettings.dataReadLocation, expSettings.datasetName, expSettings.foldId);
+
+        //data[0] = Discretize.discretizeDataset(data[0]);
+        //data[1] = Discretize.discretizeDataset(data[1]);
+
         setupClassifierExperimentalOptions(expSettings, expSettings.classifier, data[0]);
         ClassifierResults[] results = runExperiment(expSettings, data[0], data[1], expSettings.classifier);
         LOGGER.log(Level.INFO, "Experiment finished " + expSettings.toShortString() + ", Test Acc:" + results[1].getAcc());

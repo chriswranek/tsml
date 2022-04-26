@@ -1187,6 +1187,39 @@ public class Discretize
     push(inst);
   }
 
+
+  public static Instances discretizeDataset(Instances instances) throws Exception {
+    Discretize discretize = new Discretize();
+
+    discretize.setBins(10);
+
+    discretize.setInputFormat(instances);
+
+    int[] attIndices = new int[instances.numAttributes()];
+
+    for (int i = 0; i < instances.numAttributes(); i++) {
+      attIndices[i] = i;
+    }
+
+    discretize.setAttributeIndicesArray(attIndices);
+
+    discretize.setUseBinNumbers(true);
+
+    for (Instance inst: instances) {
+      discretize.input(inst);
+    }
+
+    discretize.batchFinished();
+
+    Instances discretizedInstances = new Instances(instances, 0);
+
+    for (int i = 0; i < instances.numInstances(); i++) {
+      discretizedInstances.add(discretize.output());
+    }
+
+    return discretizedInstances;
+  }
+
   /**
    * Returns the revision string.
    *
