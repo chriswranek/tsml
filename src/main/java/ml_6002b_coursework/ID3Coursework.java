@@ -22,22 +22,17 @@
 
 package ml_6002b_coursework;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import cwranek.WekaTools;
 import experiments.data.DatasetLoading;
 import utilities.ClassifierTools;
 import utilities.InstanceTools;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Sourcable;
-import weka.classifiers.trees.Id3;
-import weka.classifiers.trees.J48;
 import weka.core.*;
 import weka.core.Capabilities.Capability;
 import weka.core.TechnicalInformation.Field;
 import weka.core.TechnicalInformation.Type;
 import weka.filters.unsupervised.attribute.Discretize;
 
-import java.io.IOException;
 import java.util.Enumeration;
 
 /**
@@ -98,25 +93,33 @@ public class ID3Coursework
   /** Class distribution if node is leaf. */
   private double[] m_Distribution;
 
+  private int attOption;
+
 
 
   /** Class attribute of dataset. */
   private Attribute m_ClassAttribute;
-  private AttributeSplitMeasure attSplit  = new IGAttributeSplitMeasure();
+  private AttributeSplitMeasure attSplit = new IGAttributeSplitMeasure();
 
   public void setOptions(int option){
     switch(option){
       case 0:
+        attOption = option;
         attSplit = new IGAttributeSplitMeasure();
-
         break;
       case 1:
+        attOption = option;
         attSplit = new GiniAttributeSplitMeasure();
         break;
       case 2:
+        attOption = option;
         attSplit = new ChiSquaredAttributeSplitMeasure();
         break;
     }
+  }
+
+  public String getAttSplit(){
+    return attSplit.toString();
   }
 
 
@@ -194,7 +197,7 @@ public class ID3Coursework
     data = new Instances(data);
     data.deleteWithMissingClass();
     
-    makeTree(data);
+    makeTree(data, attOption);
   }
 
   /**
@@ -203,7 +206,7 @@ public class ID3Coursework
    * @param data the training data
    * @exception Exception if decision tree can't be built successfully
    */
-  private void makeTree(Instances data) throws Exception {
+  private void makeTree(Instances data, int attOption) throws Exception {
 
     // Check if no instances have reached this node.
     if (data.numInstances() == 0) {
@@ -214,6 +217,7 @@ public class ID3Coursework
     }
 
     //System.out.println(data.numAttributes());
+    //System.out.println(attSplit.toString());
 
     // Compute attribute with maximum information gain.
     double[] infoGains = new double[data.numAttributes()];
@@ -241,27 +245,20 @@ public class ID3Coursework
       Instances[] splitData;
       splitData = attSplit.splitData(data, m_Attribute);
 
-
-      /*
-      if(m_Attribute.isNumeric()){
-        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 0);
-      } else {
-        splitData = attSplit.splitData(data, m_Attribute);
-      }
-
-       */
-
       if(m_Attribute.isNumeric()){
         m_Successors = new ID3Coursework[10];
         for (int j = 0; j < 10; j++) {
           m_Successors[j] = new ID3Coursework();
-          m_Successors[j].makeTree(splitData[j]);
+          m_Successors[j].setOptions(attOption);
+          m_Successors[j].makeTree(splitData[j], attOption);
         }
       } else {
         m_Successors = new ID3Coursework[m_Attribute.numValues()];
+
         for (int j = 0; j < m_Attribute.numValues(); j++) {
           m_Successors[j] = new ID3Coursework();
-          m_Successors[j].makeTree(splitData[j]);
+          m_Successors[j].setOptions(attOption);
+          m_Successors[j].makeTree(splitData[j], attOption);
         }
       }
     }
@@ -477,96 +474,12 @@ public class ID3Coursework
    */
   public static void main(String[] args) throws Exception {
 
-
-    //runClassifier(new ID3Coursework(), args);
-
     /*
-    double igAccuracy = 0;
-    double giniAccuracy = 0;
-    double chiAccuracy = 0;
-    double j48Accuracy = 0;
-    double id3Accuracy = 0;
-
-    String UCIDatasetLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\";
-
-    for(String str : DatasetLists.nominalAttributeProblems){
-
-      Instances trainTest = DatasetLoading.loadData(UCIDatasetLocation+str+"\\"+str+".arff");
-      Instances[] split = InstanceTools.resampleInstances(trainTest, 0, 0.7);
-
-
-
-      ID3Coursework IGClassifier = new ID3Coursework();
-      IGClassifier.setOptions(0);
-
-      IGClassifier.buildClassifier(split[0]);
-
-      igAccuracy += ClassifierTools.accuracy(split[1], IGClassifier);
-
-
-
-      ID3Coursework giniClassifier = new ID3Coursework();
-      giniClassifier.setOptions(1);
-
-      giniClassifier.buildClassifier(split[0]);
-
-      giniAccuracy += ClassifierTools.accuracy(split[1], giniClassifier);
-
-
-
-      ID3Coursework chiClassifier = new ID3Coursework();
-      chiClassifier.setOptions(2);
-
-      chiClassifier.buildClassifier(split[0]);
-
-      chiAccuracy += ClassifierTools.accuracy(split[1], chiClassifier);
-
-
-
-      J48 j48 = new J48();
-
-      j48.buildClassifier(split[0]);
-
-      j48Accuracy += ClassifierTools.accuracy(split[1], j48);
-
-
-
-      Id3 id3 = new Id3();
-
-      id3.buildClassifier(split[0]);
-
-      id3Accuracy += ClassifierTools.accuracy(split[1], id3);
-
-
-    }
-
-
-    igAccuracy /= DatasetLists.nominalAttributeProblems.length;
-
-    giniAccuracy /= DatasetLists.nominalAttributeProblems.length;
-
-    chiAccuracy /= DatasetLists.nominalAttributeProblems.length;
-
-    j48Accuracy /= DatasetLists.nominalAttributeProblems.length;
-
-    id3Accuracy /= DatasetLists.nominalAttributeProblems.length;
-
-    System.out.println("Information Gain ID3 Accuracy: " + igAccuracy);
-
-    System.out.println("Gini Index ID3 Accuracy: " + giniAccuracy);
-
-    System.out.println("Chi Squared ID3 Accuracy: " + chiAccuracy);
-
-    System.out.println("J48 Accuracy: " + j48Accuracy);
-
-    System.out.println("ID3 Accuracy: " + id3Accuracy);
-     */
-
     String optDigitsDataset = "src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
 
     Instances optDigitsInstances = DatasetLoading.loadData(optDigitsDataset);
 
-    Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsInstances, 0, Math.random());
+    Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsInstances, 0, 0.7);
 
     ID3Coursework optIGClassifier = new ID3Coursework();
     optIGClassifier.setOptions(0);
@@ -574,6 +487,7 @@ public class ID3Coursework
     optIGClassifier.buildClassifier(trainTestSplit[0]);
 
     System.out.println("DT using measure Information Gain on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optIGClassifier));
+
 
     ID3Coursework optGiniClassifier = new ID3Coursework();
     optGiniClassifier.setOptions(1);
@@ -588,7 +502,10 @@ public class ID3Coursework
     optChiClassifier.buildClassifier(trainTestSplit[0]);
 
     System.out.println("DT using measure Chi Squared on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optChiClassifier));
+    */
 
+    System.out.println(" ");
+    System.out.println(" ");
 
 
     String chinaTownDatasetTrain = "src\\main\\java\\ml_6002b_coursework\\test_data\\ChinaTown_TRAIN.arff";
@@ -599,6 +516,9 @@ public class ID3Coursework
 
     Instances discretizedChinaTownTrain = Discretize.discretizeDataset(chinaTownTrain);
     Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest);
+
+    //System.out.println(discretizedChinaTownTrain);
+
 
     ID3Coursework IGClassifier = new ID3Coursework();
     IGClassifier.setOptions(0);

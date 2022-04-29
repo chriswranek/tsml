@@ -158,10 +158,10 @@ public class Experiments  {
              */
 //            String[] classifiers={"TSF_I","RISE_I","STC_I","CBOSS_I","HIVE-COTEn_I"};
 //            String classifier=classifiers[2];
-            String classifier="ID3CourseworkChi";//Classifier name: See ClassifierLists for valid options
+            String classifier="TreeEnsemble";//Classifier name: See ClassifierLists for valid options
 
-            settings[0]="-dp=src\\main\\java\\ml_6002b_coursework\\test_data\\UCI Discrete\\"; //Where to get datasets
-            settings[1]="-rp=C:\\Experiments\\Results\\DecisionTreeComp\\"; //Where to write results
+            settings[0]="-dp=src\\main\\java\\ml_6002b_coursework\\test_data\\Case Study\\"; //Where to get datasets
+            settings[1]="-rp=C:\\Experiments\\Results\\Case Study\\"; //Where to write results
             settings[2]="-gtf=false"; //Whether to generate train files or not
             settings[3]="-cn="+classifier; //Classifier name
             settings[4]="-dn="; //Problem name, don't change here as it is overwritten by probFiles
@@ -170,9 +170,9 @@ public class Experiments  {
             settings[7]="-d=false"; //Debugging
             settings[8]="--force=true"; //Overwrites existing results if true, otherwise set to false
 
-            String[] probFiles= DatasetLists.nominalAttributeProblems;
+            //String[] probFiles= DatasetLists.nominalAttributeProblems;
 
-            //String[] probFiles= {"FiftyWords"}; //Problem name(s)
+            String[] probFiles= {"FiftyWords"}; //Problem name(s)
 
             /*
              * END OF SETTINGS
@@ -251,8 +251,8 @@ public class Experiments  {
 
         Instances[] data = DatasetLoading.sampleDataset(expSettings.dataReadLocation, expSettings.datasetName, expSettings.foldId);
 
-        //data[0] = Discretize.discretizeDataset(data[0]);
-        //data[1] = Discretize.discretizeDataset(data[1]);
+        data[0] = Discretize.discretizeDataset(data[0]);
+        data[1] = Discretize.discretizeDataset(data[1]);
 
         setupClassifierExperimentalOptions(expSettings, expSettings.classifier, data[0]);
         ClassifierResults[] results = runExperiment(expSettings, data[0], data[1], expSettings.classifier);

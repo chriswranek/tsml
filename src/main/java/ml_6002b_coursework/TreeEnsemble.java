@@ -17,22 +17,26 @@ public class TreeEnsemble extends AbstractClassifier {
     boolean averageDistributions = false;
     ID3Coursework[] treeEnsemble;
     double[] classDistro;
-    double attProp = 1.0;
+    double attProp = 0.5;
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
 
         treeEnsemble = new ID3Coursework[numTrees];
 
+        int max = 3;
         for (int i = 0; i < numTrees; i++) {
             treeEnsemble[i] = new ID3Coursework();
+            Random r = new Random();
+
+            treeEnsemble[i].setOptions(r.nextInt(max));
         }
 
         for (int i = 0; i < numTrees; i++) {
 
             Instances tempData = new Instances(data);
 
-            for (int j = 0; j < (int)(data.numAttributes() * attProp); j++) {
+            for (int j = 0; j < (int)(data.numAttributes() * (1 - attProp)); j++) {
                 Random rand = new Random();
 
                 Attribute index = tempData.attribute(rand.nextInt(data.numAttributes()));
@@ -120,6 +124,10 @@ public class TreeEnsemble extends AbstractClassifier {
         }
 
         return largestIndex;
+    }
+
+    public void setNumTrees(int numTrees){
+        this.numTrees = numTrees;
     }
 
 
