@@ -9,6 +9,11 @@ public class ChiSquaredAttributeSplitMeasure implements AttributeSplitMeasure{
     @Override
     public double computeAttributeQuality(Instances data, Attribute att) throws Exception {
 
+        //Before computing the attribute quality, the data Instances need to be sorted by the chosen
+        //attribute. This is done by iterating through the instances and placing the selected attribute value and its
+        //corresponding class value for that instance into a 2D array. This array will have two columns and as many rows
+        //as there are instances in the data. This array is then passed to attribute selection functions to compute the
+        //quality of the attribute.
         int[][] computeArr = new int[data.numInstances()][2];
 
         for (int i = 0; i < data.numInstances(); i++) {

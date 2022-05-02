@@ -33,6 +33,7 @@ import weka.core.TechnicalInformation.Field;
 import weka.core.TechnicalInformation.Type;
 import weka.filters.unsupervised.attribute.Discretize;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
@@ -95,12 +96,19 @@ public class ID3Coursework
 
   private int attOption;
 
+  ArrayList<Integer> attValues = new ArrayList<>();
+
 
 
   /** Class attribute of dataset. */
   private Attribute m_ClassAttribute;
   private AttributeSplitMeasure attSplit = new IGAttributeSplitMeasure();
 
+  /** Set options is used to select which method
+   * of attribute selection is used when forming the decision tree
+   * for the classifier. In the treeEnsemble, the selection method
+   * for each tree is chosen at random.
+   * **/
   public void setOptions(int option){
     switch(option){
       case 0:
@@ -115,6 +123,11 @@ public class ID3Coursework
         attOption = option;
         attSplit = new ChiSquaredAttributeSplitMeasure();
         break;
+      case 3:
+        attOption = option;
+        IGAttributeSplitMeasure igAtt = new IGAttributeSplitMeasure();
+        igAtt.setUseGain(true);
+        attSplit = igAtt;
     }
   }
 
@@ -208,6 +221,8 @@ public class ID3Coursework
    */
   private void makeTree(Instances data, int attOption) throws Exception {
 
+    //System.out.println(data.numAttributes());
+
     // Check if no instances have reached this node.
     if (data.numInstances() == 0) {
       m_Attribute = null;
@@ -281,8 +296,8 @@ public class ID3Coursework
     if (m_Attribute == null) {
       return m_ClassValue;
     } else {
-      return m_Successors[(int) instance.value(m_Attribute)].
-        classifyInstance(instance);
+      //System.out.println(m_Attribute.numValues());
+      return m_Successors[(int) instance.value(m_Attribute)].classifyInstance(instance);
     }
   }
 
@@ -474,7 +489,7 @@ public class ID3Coursework
    */
   public static void main(String[] args) throws Exception {
 
-    /*
+
     String optDigitsDataset = "src\\main\\java\\ml_6002b_coursework\\test_data\\optdigits.arff";
 
     Instances optDigitsInstances = DatasetLoading.loadData(optDigitsDataset);
@@ -502,7 +517,7 @@ public class ID3Coursework
     optChiClassifier.buildClassifier(trainTestSplit[0]);
 
     System.out.println("DT using measure Chi Squared on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optChiClassifier));
-    */
+
 
     System.out.println(" ");
     System.out.println(" ");
