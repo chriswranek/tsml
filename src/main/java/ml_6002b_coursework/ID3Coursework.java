@@ -88,6 +88,9 @@ public class ID3Coursework
   /** Attribute used for splitting. */
   private Attribute m_Attribute;
 
+  /** Stores the values of an attribute*/
+  private ArrayList<Integer> m_attValues;
+
   /** Class value if node is leaf. */
   private double m_ClassValue;
 
@@ -95,8 +98,6 @@ public class ID3Coursework
   private double[] m_Distribution;
 
   private int attOption;
-
-  ArrayList<Integer> attValues = new ArrayList<>();
 
 
 
@@ -242,6 +243,8 @@ public class ID3Coursework
       infoGains[att.index()] = attSplit.computeAttributeQuality(data, att);
     }
     m_Attribute = data.attribute(Utils.maxIndex(infoGains));
+    m_attValues = new ArrayList<>();
+
     
     // Make leaf if information gain is zero. 
     // Otherwise create successors.
@@ -258,16 +261,19 @@ public class ID3Coursework
       m_ClassAttribute = data.classAttribute();
     } else {
       Instances[] splitData;
-      splitData = attSplit.splitData(data, m_Attribute);
-
       if(m_Attribute.isNumeric()){
+        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 0, true);
+
         m_Successors = new ID3Coursework[10];
+
         for (int j = 0; j < 10; j++) {
           m_Successors[j] = new ID3Coursework();
           m_Successors[j].setOptions(attOption);
           m_Successors[j].makeTree(splitData[j], attOption);
         }
       } else {
+        splitData = attSplit.splitData(data, m_Attribute);
+
         m_Successors = new ID3Coursework[m_Attribute.numValues()];
 
         for (int j = 0; j < m_Attribute.numValues(); j++) {
@@ -276,6 +282,22 @@ public class ID3Coursework
           m_Successors[j].makeTree(splitData[j], attOption);
         }
       }
+
+
+
+
+      /*
+      Enumeration attValueEnum = m_Attribute.enumerateValues();
+      while (attValueEnum.hasMoreElements()){
+        String integer = (String) attValueEnum.nextElement();
+        //System.out.println(integer);
+        m_attValues.add(Integer.parseInt(integer));
+      }
+
+       */
+
+      //System.out.println(m_attValues);
+
     }
   }
 
@@ -297,6 +319,12 @@ public class ID3Coursework
       return m_ClassValue;
     } else {
       //System.out.println(m_Attribute.numValues());
+      //System.out.println(m_Successors.length);
+      //System.out.println(instance.value(m_Attribute));
+      //System.out.println(instance);
+      //System.out.println(" ");
+
+      //return m_Successors[m_attValues.indexOf((int)instance.value(m_Attribute))].classifyInstance(instance);
       return m_Successors[(int) instance.value(m_Attribute)].classifyInstance(instance);
     }
   }
@@ -494,7 +522,7 @@ public class ID3Coursework
 
     Instances optDigitsInstances = DatasetLoading.loadData(optDigitsDataset);
 
-    Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsInstances, 0, 0.7);
+    Instances[] trainTestSplit = InstanceTools.resampleInstances(optDigitsInstances, 0, Math.random());
 
     ID3Coursework optIGClassifier = new ID3Coursework();
     optIGClassifier.setOptions(0);

@@ -23,39 +23,19 @@ public interface AttributeSplitMeasure {
      */
      default Instances[] splitData(Instances data, Attribute att) {
 
-         if(att.isNumeric()){
-             //This section of code is for use when the data selected has first been discretized, making the numeric
-             //attributes nominal in nature, however Weka will still recognise them as numeric and use them incorrectly
-             //This code splits the discretized data into 10 seperate Instances, one for each bin the data has been
-             //discretized into
-             Instances[] splitData = new Instances[10];
-             for (int j = 0; j < 10; j++) {
-                 splitData[j] = new Instances(data, data.numInstances());
-             }
-             Enumeration instEnum = data.enumerateInstances();
-             while (instEnum.hasMoreElements()) {
-                 Instance inst = (Instance) instEnum.nextElement();
-                 splitData[(int) inst.value(att)].add(inst);
-             }
-             for (Instances splitDatum : splitData) {
-                 splitDatum.compactify();
-             }
-             return splitData;
-         } else {
-             Instances[] splitData = new Instances[att.numValues()];
-             for (int j = 0; j < att.numValues(); j++) {
-                 splitData[j] = new Instances(data, data.numInstances());
-             }
-             Enumeration instEnum = data.enumerateInstances();
-             while (instEnum.hasMoreElements()) {
-                 Instance inst = (Instance) instEnum.nextElement();
-                 splitData[(int) inst.value(att)].add(inst);
-             }
-             for (Instances splitDatum : splitData) {
-                 splitDatum.compactify();
-             }
-             return splitData;
+         Instances[] splitData = new Instances[att.numValues()];
+         for (int j = 0; j < att.numValues(); j++) {
+             splitData[j] = new Instances(data, data.numInstances());
          }
+         Enumeration instEnum = data.enumerateInstances();
+         while (instEnum.hasMoreElements()) {
+             Instance inst = (Instance) instEnum.nextElement();
+             splitData[(int) inst.value(att)].add(inst);
+         }
+         for (Instances splitDatum : splitData) {
+             splitDatum.compactify();
+         }
+         return splitData;
     }
 
 
@@ -67,42 +47,59 @@ public interface AttributeSplitMeasure {
      *
      * @param data the data which is to be split
      * @param value the numeric value to be used for binary splitting
+     * @param discretized boolean for whether the data has been discretized before splitting
      * @return the sets of instances produced by the split above and below the value
      */
-    default Instances[] splitDataOnNumeric(Instances data, Attribute att, double value) {
+    default Instances[] splitDataOnNumeric(Instances data, Attribute att, double value, boolean discretized) {
 
-        double meanValue = 0;
+        if(discretized){
+            Instances[] splitData = new Instances[10];
+            for (int j = 0; j < 10; j++) {
+                splitData[j] = new Instances(data, data.numInstances());
+            }
+            Enumeration instEnum = data.enumerateInstances();
+            while (instEnum.hasMoreElements()) {
+                Instance inst = (Instance) instEnum.nextElement();
+                splitData[(int) inst.value(att)].add(inst);
+            }
+            for (Instances splitDatum : splitData) {
+                splitDatum.compactify();
+            }
+            return splitData;
+        } else {
+            double meanValue = 0;
 
-        //If the value given to the function is 0, then a mean value will be calculated for all the attribute values
-        //to determine the best value to perform the binary split on
-        if(value == 0){
+            //If the value given to the function is 0, then a mean value will be calculated for all the attribute values
+            //to determine the best value to perform the binary split on
+            if(value == 0){
+                for (int i = 0; i < data.numInstances(); i++) {
+                    meanValue += data.get(i).value(att);
+                }
+                meanValue /= data.numInstances();
+                value = meanValue;
+            }
+
+            Instances[] splitData = new Instances[2];
+
+            for (int i = 0; i < splitData.length; i++) {
+                splitData[i] = new Instances(data, data.numInstances());
+            }
+
+            //The data is split into two seperate instances, and each attribute value is assessed to see whether it falls
+            //above or below the chosen splitting value
             for (int i = 0; i < data.numInstances(); i++) {
-                meanValue += data.get(i).value(att);
+                if(data.get(i).value(att) < value){
+                    splitData[0].add(data.get(i));
+                } else {
+                    splitData[1].add(data.get(i));
+                }
             }
-            meanValue /= data.numInstances();
-            value = meanValue;
-        }
 
-        Instances[] splitData = new Instances[2];
-
-        for (int i = 0; i < splitData.length; i++) {
-            splitData[i] = new Instances(data, data.numInstances());
-        }
-
-        //The data is split into two seperate instances, and each attribute value is assessed to see whether it falls
-        //above or below the chosen splitting value
-        for (int i = 0; i < data.numInstances(); i++) {
-            if(data.get(i).value(att) < value){
-                splitData[0].add(data.get(i));
-            } else {
-                splitData[1].add(data.get(i));
+            for (Instances splitDatum : splitData) {
+                splitDatum.compactify();
             }
+            return splitData;
         }
-
-        for (Instances splitDatum : splitData) {
-            splitDatum.compactify();
-        }
-        return splitData;
     }
 
 }
