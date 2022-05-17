@@ -88,9 +88,6 @@ public class ID3Coursework
   /** Attribute used for splitting. */
   private Attribute m_Attribute;
 
-  /** Stores the values of an attribute*/
-  private ArrayList<Integer> m_attValues;
-
   /** Class value if node is leaf. */
   private double m_ClassValue;
 
@@ -99,11 +96,23 @@ public class ID3Coursework
 
   private int attOption;
 
+  private boolean discretized = false;
+
+  private int numOfBins = 10;
+
 
 
   /** Class attribute of dataset. */
   private Attribute m_ClassAttribute;
   private AttributeSplitMeasure attSplit = new IGAttributeSplitMeasure();
+
+  public void setDiscretized(boolean bool){
+    discretized = bool;
+  }
+
+  public void setNumOfBins(int num){
+    numOfBins = num;
+  }
 
   /** Set options is used to select which method
    * of attribute selection is used when forming the decision tree
@@ -243,7 +252,6 @@ public class ID3Coursework
       infoGains[att.index()] = attSplit.computeAttributeQuality(data, att);
     }
     m_Attribute = data.attribute(Utils.maxIndex(infoGains));
-    m_attValues = new ArrayList<>();
 
     
     // Make leaf if information gain is zero. 
@@ -261,14 +269,33 @@ public class ID3Coursework
       m_ClassAttribute = data.classAttribute();
     } else {
       Instances[] splitData;
-      if(m_Attribute.isNumeric()){
-        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 0, true);
 
-        m_Successors = new ID3Coursework[10];
+      //This section handles the data splitting for the classifier based on the data being nominal or numeric, and then
+      //if numeric whether the data is discretized or not. If the data is not discretized, then a binary data split is
+      //performed and two successor nodes are created. If the data is discretized using the discretize data method, then
+      //the data is split into 10 bins, so each node requires 10 successors to it since each attribute will now have
+      //10 discrete values
+      if(m_Attribute.isNumeric() && !discretized){
+        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 0, false, 0);
 
-        for (int j = 0; j < 10; j++) {
+        m_Successors = new ID3Coursework[2];
+
+        for (int j = 0; j < 2; j++) {
           m_Successors[j] = new ID3Coursework();
           m_Successors[j].setOptions(attOption);
+          m_Successors[j].setDiscretized(false);
+          m_Successors[j].makeTree(splitData[j], attOption);
+        }
+
+      } else if(m_Attribute.isNumeric() && discretized){
+        splitData = attSplit.splitDataOnNumeric(data, m_Attribute, 0, true, numOfBins);
+
+        m_Successors = new ID3Coursework[numOfBins];
+
+        for (int j = 0; j < numOfBins; j++) {
+          m_Successors[j] = new ID3Coursework();
+          m_Successors[j].setOptions(attOption);
+          m_Successors[j].setDiscretized(true);
           m_Successors[j].makeTree(splitData[j], attOption);
         }
       } else {
@@ -282,21 +309,6 @@ public class ID3Coursework
           m_Successors[j].makeTree(splitData[j], attOption);
         }
       }
-
-
-
-
-      /*
-      Enumeration attValueEnum = m_Attribute.enumerateValues();
-      while (attValueEnum.hasMoreElements()){
-        String integer = (String) attValueEnum.nextElement();
-        //System.out.println(integer);
-        m_attValues.add(Integer.parseInt(integer));
-      }
-
-       */
-
-      //System.out.println(m_attValues);
 
     }
   }
@@ -557,14 +569,22 @@ public class ID3Coursework
     Instances chinaTownTrain = DatasetLoading.loadData(chinaTownDatasetTrain);
     Instances chinaTownTest = DatasetLoading.loadData(chinaTownDatasetTest);
 
-    Instances discretizedChinaTownTrain = Discretize.discretizeDataset(chinaTownTrain);
-    Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest);
+    //The discretizeDataset method is a method that I created and added to the Discretize class in Weka
+    //It takes in a numeric dataset of any size and partitions the attributes into 10 bins. Once all the values and
+    //instances have been discretized, the dataset is returned and is able to be used in nominal classifiers.
+    Instances discretizedChinaTownTrain = Discretize.discretizeDataset(chinaTownTrain, 10);
+    Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest, 10);
 
-    //System.out.println(discretizedChinaTownTrain);
 
-
+    //For Numeric  data, further parameters need to be set up so that the classifier can handle the data correctly
+    //The classifier has 3 different options for handling data, firstly if the data has been discretized into bins
+    //then the discretized variable must be set to true so the classifier builds enough successors. If the data is
+    //numeric but not discretized, then a binary split is performed on the data at each tree node. If the data is
+    //nominal then it is handled normally by the classifier.
     ID3Coursework IGClassifier = new ID3Coursework();
     IGClassifier.setOptions(0);
+    IGClassifier.setDiscretized(true);
+    IGClassifier.setNumOfBins(10);
 
     IGClassifier.buildClassifier(discretizedChinaTownTrain);
 
@@ -572,6 +592,8 @@ public class ID3Coursework
 
     ID3Coursework giniClassifier = new ID3Coursework();
     giniClassifier.setOptions(1);
+    giniClassifier.setDiscretized(true);
+    giniClassifier.setNumOfBins(10);
 
     giniClassifier.buildClassifier(discretizedChinaTownTrain);
 
@@ -579,6 +601,8 @@ public class ID3Coursework
 
     ID3Coursework chiClassifier = new ID3Coursework();
     chiClassifier.setOptions(2);
+    chiClassifier.setDiscretized(true);
+    chiClassifier.setNumOfBins(10);
 
     chiClassifier.buildClassifier(discretizedChinaTownTrain);
 

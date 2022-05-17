@@ -50,11 +50,12 @@ public interface AttributeSplitMeasure {
      * @param discretized boolean for whether the data has been discretized before splitting
      * @return the sets of instances produced by the split above and below the value
      */
-    default Instances[] splitDataOnNumeric(Instances data, Attribute att, double value, boolean discretized) {
+    default Instances[] splitDataOnNumeric(Instances data, Attribute att, double value, boolean discretized, int numOfBins) {
+
 
         if(discretized){
-            Instances[] splitData = new Instances[10];
-            for (int j = 0; j < 10; j++) {
+            Instances[] splitData = new Instances[numOfBins];
+            for (int j = 0; j < numOfBins; j++) {
                 splitData[j] = new Instances(data, data.numInstances());
             }
             Enumeration instEnum = data.enumerateInstances();
@@ -79,6 +80,7 @@ public interface AttributeSplitMeasure {
                 value = meanValue;
             }
 
+            //Binary Split
             Instances[] splitData = new Instances[2];
 
             for (int i = 0; i < splitData.length; i++) {

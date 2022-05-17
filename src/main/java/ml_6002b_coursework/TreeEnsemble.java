@@ -16,13 +16,24 @@ import java.util.Random;
 
 public class TreeEnsemble extends AbstractClassifier {
 
+    int numOfBins = 10;
     int numTrees = 50;
     boolean averageDistributions = false;
     ID3Coursework[] treeEnsemble;
     double[] classDistro;
     double attProp = 0.5;
     ArrayList<String> attIndices;
+    boolean discretized = false;
 
+
+
+    public void setDiscretized(boolean bool){
+        discretized = bool;
+    }
+
+    public void setNumOfBins(int num){
+        numOfBins = num;
+    }
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
@@ -39,6 +50,7 @@ public class TreeEnsemble extends AbstractClassifier {
             Random r = new Random();
 
             treeEnsemble[i].setOptions(r.nextInt(max));
+            treeEnsemble[i].setDiscretized(discretized);
         }
 
 
@@ -236,7 +248,6 @@ public class TreeEnsemble extends AbstractClassifier {
 
         System.out.println("TreeEnsemble on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optTreeEnsemble));
 
-        //optTreeEnsemble.classifyInstance(trainTestSplit[1].get(114));
 
         for (int i = 0; i < 5; i++) { System.out.println(Arrays.toString(optTreeEnsemble.distributionForInstance(trainTestSplit[1].get(i)))); }
 
@@ -250,10 +261,12 @@ public class TreeEnsemble extends AbstractClassifier {
         Instances chinaTownTrain = DatasetLoading.loadData(chinaTownDatasetTrain);
         Instances chinaTownTest = DatasetLoading.loadData(chinaTownDatasetTest);
 
-        Instances discretizedChinaTownTrain = Discretize.discretizeDataset(chinaTownTrain);
-        Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest);
+        Instances discretizedChinaTownTrain = Discretize.discretizeDataset(chinaTownTrain, 10);
+        Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest, 10);
 
         TreeEnsemble chinaEnsemble = new TreeEnsemble();
+        chinaEnsemble.setDiscretized(true);
+        chinaEnsemble.setNumOfBins(10);
 
         chinaEnsemble.buildClassifier(discretizedChinaTownTrain);
 

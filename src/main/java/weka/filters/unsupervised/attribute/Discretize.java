@@ -1188,10 +1188,11 @@ public class Discretize
   }
 
 
-  public static Instances discretizeDataset(Instances instances) throws Exception {
+
+  public static Instances discretizeDataset(Instances instances, int numOfBins) throws Exception {
     Discretize discretize = new Discretize();
 
-    discretize.setBins(10);
+    discretize.setBins(numOfBins);
 
     discretize.setInputFormat(instances);
 
