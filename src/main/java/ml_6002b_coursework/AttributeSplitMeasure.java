@@ -53,6 +53,8 @@ public interface AttributeSplitMeasure {
     default Instances[] splitDataOnNumeric(Instances data, Attribute att, double value, boolean discretized, int numOfBins) {
 
 
+        //If the data has been discretized before splitting then the data is split according to the number of bins the
+        //data has been discretized into
         if(discretized){
             Instances[] splitData = new Instances[numOfBins];
             for (int j = 0; j < numOfBins; j++) {

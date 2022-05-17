@@ -3,6 +3,13 @@ package ml_6002b_coursework;
 import experiments.data.DatasetLoading;
 import utilities.ClassifierTools;
 import utilities.InstanceTools;
+import weka.classifiers.bayes.BayesNet;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.meta.Bagging;
+import weka.classifiers.meta.RotationForest;
+import weka.classifiers.rules.DecisionTable;
+import weka.classifiers.rules.ZeroR;
+import weka.classifiers.trees.*;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Discretize;
@@ -39,35 +46,14 @@ public class TestHarness {
 
     public static void main(String[] args) throws Exception {
 
-        /*
+
         String[] str = {"C:\\Experiments\\Results\\Case Study\\","C:\\Users\\block\\Documents\\GitHub\\tsml\\src\\" +
                 "main\\java\\ml_6002b_coursework\\test_data\\Case Study\\","30","false","TreeEnsemble","0"};
 
-        experiments.CollateResults.collate(str);#
-        */
+        experiments.CollateResults.collate(str);
 
-
-        File file = new File("C:\\Users\\block\\Desktop\\Ubiquitous Computing\\0HnoWaterBL.log.txt");
-
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        PrintWriter writer = new PrintWriter("C:\\Users\\block\\Desktop\\Ubiquitous Computing\\bloodOx5.csv");
-
-        String st;
-        StringBuilder result = new StringBuilder();
-
-        while ((st = br.readLine()) != null){
-
-            if(!st.contains(",0,")){
-                result.append(st).append("\n");
-            }
-        }
 
         //System.out.println(result);
-
-        writer.write(result.toString());
-
-        System.out.println(" ");
-        System.out.println(" ");
 
         /*
         String chinaTownDatasetTrain = "src\\main\\java\\ml_6002b_coursework\\test_data\\ChinaTown_TRAIN.arff";
@@ -146,6 +132,26 @@ public class TestHarness {
 
         System.out.println("TreeEnsemble on optdigits problem has test accuracy = " + ClassifierTools.accuracy(trainTestSplit[1], optTreeEnsemble));
         */
+
+        Bagging bagging = new Bagging();
+
+        BayesNet bayesNet = new BayesNet();
+
+        DecisionStump decisionStump = new DecisionStump();
+
+        DecisionTable decisionTable = new DecisionTable();
+
+        HoeffdingTree hoeffdingTree = new HoeffdingTree();
+
+        NaiveBayes naiveBayes = new NaiveBayes();
+
+        RandomForest randomForest = new RandomForest();
+
+        RotationForest rotationForest = new RotationForest();
+
+        SimpleCart simpleCart = new SimpleCart();
+
+        ZeroR zeroR = new ZeroR();
 
 
     }

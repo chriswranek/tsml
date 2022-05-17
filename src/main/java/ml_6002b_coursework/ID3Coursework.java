@@ -116,7 +116,7 @@ public class ID3Coursework
 
   /** Set options is used to select which method
    * of attribute selection is used when forming the decision tree
-   * for the classifier. In the treeEnsemble, the selection method
+   * for the classifier. In treeEnsemble, the selection method
    * for each tree is chosen at random.
    * **/
   public void setOptions(int option){
@@ -241,9 +241,6 @@ public class ID3Coursework
       return;
     }
 
-    //System.out.println(data.numAttributes());
-    //System.out.println(attSplit.toString());
-
     // Compute attribute with maximum information gain.
     double[] infoGains = new double[data.numAttributes()];
     Enumeration attEnum = data.enumerateAttributes();
@@ -330,13 +327,7 @@ public class ID3Coursework
     if (m_Attribute == null) {
       return m_ClassValue;
     } else {
-      //System.out.println(m_Attribute.numValues());
-      //System.out.println(m_Successors.length);
-      //System.out.println(instance.value(m_Attribute));
-      //System.out.println(instance);
-      //System.out.println(" ");
 
-      //return m_Successors[m_attValues.indexOf((int)instance.value(m_Attribute))].classifyInstance(instance);
       return m_Successors[(int) instance.value(m_Attribute)].classifyInstance(instance);
     }
   }
@@ -576,7 +567,7 @@ public class ID3Coursework
     Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest, 10);
 
 
-    //For Numeric  data, further parameters need to be set up so that the classifier can handle the data correctly
+    //For numeric  data, further parameters need to be set up so that the classifier can handle the data correctly
     //The classifier has 3 different options for handling data, firstly if the data has been discretized into bins
     //then the discretized variable must be set to true so the classifier builds enough successors. If the data is
     //numeric but not discretized, then a binary split is performed on the data at each tree node. If the data is

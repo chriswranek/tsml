@@ -44,12 +44,14 @@ public class TreeEnsemble extends AbstractClassifier {
         //This first loop sets the attribute selection method for each of the trees in the ensemble
         //There are 4 methods to choose from, so a random number between 0 and 3 is generated and
         //setOptions is called for each tree, giving it the random number to set its selection method
-        int max = 4;
+
         for (int i = 0; i < numTrees; i++) {
             treeEnsemble[i] = new ID3Coursework();
             Random r = new Random();
 
-            treeEnsemble[i].setOptions(r.nextInt(max));
+            treeEnsemble[i].setOptions(r.nextInt(4));
+            //If the ensemble is being built using discretized data, then this must be set in each decision tree as well
+            //so each tree can have enough node successors for the data and split the data for each node correctly
             treeEnsemble[i].setDiscretized(discretized);
         }
 
@@ -63,9 +65,14 @@ public class TreeEnsemble extends AbstractClassifier {
             Instances newData;
             Remove remove = new Remove();
 
-            //System.out.println(tempData);
+
 
             if(attProp < 1){
+                //If the attribute sampling is less than 100%, then a random set of attributes need to be selected from
+                //the dataset, this is done by calling getAttributeIndices which returns a series of random index values
+                //for attributes in the dataset, and only as many as need to be removed.
+                //The array of indices is then converted to a string and passed to the removal filter to remove those
+                //attributes from the dataset
                 ArrayList<Integer> arrayList = new ArrayList<>();
                 int[] attArr = getAttributeIndices(arrayList, data.numAttributes(), attProp);
 
@@ -78,7 +85,8 @@ public class TreeEnsemble extends AbstractClassifier {
                 remove.setInputFormat(tempData);
                 newData = Filter.useFilter(tempData, remove);
 
-                //System.out.println(newData);
+                //After removal, a new instances object is created that contains the same dataset but with the
+                //selected attributes removed, effectively sampling a sub-portion of the attributes in the dataset
 
                 treeEnsemble[i].buildClassifier(newData);
             } else {
@@ -135,10 +143,6 @@ public class TreeEnsemble extends AbstractClassifier {
                 remove.setInputFormat(instance.dataset());
 
                 newData = Filter.useFilter(instance.dataset(), remove);
-
-                //System.out.println("  Cleaned Instance: "+ newData.instance(instance.dataset().indexOf(instance)));
-                //Classify instance is called for each tree in the ensemble, the returned class value is then used to
-                //increment the class count array at the correct index
 
                 //Once the instance has been filtered it can now be classified by the ensemble
                 classPreds[(int) treeEnsemble[i].classifyInstance(newData.instance(instance.dataset().indexOf(instance)))]++;
@@ -265,6 +269,11 @@ public class TreeEnsemble extends AbstractClassifier {
         Instances discretizedChinaTownTest  = Discretize.discretizeDataset(chinaTownTest, 10);
 
         TreeEnsemble chinaEnsemble = new TreeEnsemble();
+
+        //Setup of parameters for the ensemble for dealing with numeric data or discretized data
+        //The boolean discretized must be set to true so the decision trees split the data properly, and
+        //the number of bins must also be known so the decision tree can have the right amount of node
+        //successors
         chinaEnsemble.setDiscretized(true);
         chinaEnsemble.setNumOfBins(10);
 
