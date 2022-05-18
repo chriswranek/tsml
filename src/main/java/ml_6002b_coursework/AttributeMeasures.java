@@ -130,6 +130,8 @@ public class AttributeMeasures {
             intrinsicValue += (j / numInstances * log2(j / numInstances));
         }
 
+        intrinsicValue *= -1;
+
         //The ratio is simply the regular information gain divided by the intrinsic value
         return measureInformationGain(arr) / intrinsicValue;
     }
@@ -278,17 +280,22 @@ public class AttributeMeasures {
 
     public static void main(String[] args) throws Exception {
 
-        String testDataLocation = "C:\\Users\\block\\Desktop\\Machine Learning\\Whisky_TRAIN.arff";
+        String testDataLocation = "src\\main\\java\\ml_6002b_coursework\\test_data\\Whisky_TRAIN.arff";
 
         Instances test = DatasetLoading.loadData(testDataLocation);
 
         IGAttributeSplitMeasure igAtt = new IGAttributeSplitMeasure();
+
+        IGAttributeSplitMeasure igAttRatio = new IGAttributeSplitMeasure();
+        igAttRatio.setUseGain(false);
 
         ChiSquaredAttributeSplitMeasure chiAtt = new ChiSquaredAttributeSplitMeasure();
 
         GiniAttributeSplitMeasure giniAtt = new GiniAttributeSplitMeasure();
 
         System.out.println("Measure Information Gain for attribute " + test.attribute(0).name() + " splitting diagnosis = " + igAtt.computeAttributeQuality(test, test.attribute(0)));
+
+        System.out.println("Measure Information Gain Ratio for attribute " + test.attribute(0).name() + " splitting diagnosis = " + igAttRatio.computeAttributeQuality(test, test.attribute(0)));
 
         System.out.println("Measure Chi-Squared for attribute " + test.attribute(0).name() + " splitting diagnosis = " + chiAtt.computeAttributeQuality(test, test.attribute(0)));
 
